@@ -1,4 +1,5 @@
 import { exec } from "@/app/utils";
+import { NextRequest } from "next/server";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { cwd } from "node:process";
@@ -18,7 +19,7 @@ async function saveFile(file: File) {
   return { filepath, fullpath };
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const file = formData.get("image") as File;
