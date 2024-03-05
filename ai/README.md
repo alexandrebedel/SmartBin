@@ -6,26 +6,26 @@ This directory contains scripts and files related to the AI part of the ESP proj
 
 To set up the AI part, follow these steps:
 
-3. Create and activate a virtual environment (optional but recommended):
+1. Create and activate a virtual environment (optional but recommended):
 
    ```bash
    python3 -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
-4. Install the required dependencies using pip:
+2. Install the required dependencies using pip:
 
    ```bash
    pip install -r requirements.txt
    ```
 
-5. Run the `predict.py` script to classify waste:
+3. Run the `predict.py` script to classify waste:
 
    ```bash
    python predict.py path/to/your/image.jpg
    ```
 
-6. Once you're done, deactivate the virtual environment:
+4. Once you're done, deactivate the virtual environment:
 
    ```bash
    deactivate
