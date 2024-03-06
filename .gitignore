@@ -1,5 +1,5 @@
 *.keras
 .idea
-test-images/
+
 # Python venv
 venv/
