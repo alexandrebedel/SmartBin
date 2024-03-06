@@ -27,7 +27,10 @@ export async function POST(request: NextRequest) {
     if (!file) {
       throw new Error("Failed to parse the form");
     }
-    if (!file.type.includes("image/")) {
+    if (
+      file.type !== "application/octet-stream" &&
+      !file.type.includes("image/")
+    ) {
       throw new Error("An image file is needed to process your request");
     }
 
