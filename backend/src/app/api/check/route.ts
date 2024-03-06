@@ -1,4 +1,5 @@
 import { exec } from "@/app/utils";
+import { NextRequest } from "next/server";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { cwd } from "node:process";
@@ -18,7 +19,7 @@ async function saveFile(file: File) {
   return { filepath, fullpath };
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const file = formData.get("image") as File;
@@ -26,7 +27,10 @@ export async function POST(request: Request) {
     if (!file) {
       throw new Error("Failed to parse the form");
     }
-    if (!file.type.includes("image/")) {
+    if (
+      file.type !== "application/octet-stream" &&
+      !file.type.includes("image/")
+    ) {
       throw new Error("An image file is needed to process your request");
     }
 
@@ -41,13 +45,16 @@ export async function POST(request: Request) {
       type: result.trim(),
     });
   } catch (error) {
-    return Response.json({
-      message: "An error occured",
-      error:
-        error instanceof Error
-          ? (error as any).stdout || error.message
-          : "Unknown error message",
-      instance: error instanceof Error ? error.name : "GenericError",
-    });
+    return Response.json(
+      {
+        message: "An error occured",
+        error:
+          error instanceof Error
+            ? (error as any).stdout || error.message
+            : "Unknown error message",
+        instance: error instanceof Error ? error.name : "GenericError",
+      },
+      { status: 400 }
+    );
   }
 }
