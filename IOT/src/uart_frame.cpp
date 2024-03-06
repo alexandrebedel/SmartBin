@@ -23,9 +23,10 @@ static QueueHandle_t uart_buffer_queue = NULL;
 static void uart_frame_task(void *arg);
 static void uart_frame_send_task(void *arg);
 
-typedef struct _UartFrame_t {
+typedef struct _UartFrame_t
+{
   bool free_buffer;
-  uint8_t* buffer;
+  uint8_t *buffer;
   uint32_t len;
 } UartFrame_t;
 
@@ -33,30 +34,31 @@ int32_t baud_rate = 1500000;
 uint16_t uart_tx_pin = 26;
 uint16_t uart_rx_pin = 36;
 
-void __attribute__((weak)) frame_post_callback(uint8_t cmd) {
-
+void __attribute__((weak)) frame_post_callback(uint8_t cmd)
+{
 }
 
-void __attribute__((weak)) frame_recv_callback(int cmd, const uint8_t*buf, int len) {
-
+void __attribute__((weak)) frame_recv_callback(int cmd, const uint8_t *buf, int len)
+{
 }
 
-static void uart_base_init() {
+static void uart_base_init()
+{
   uart_driver_delete(UART_NUM);
   const uart_config_t uart_config = {
-    .baud_rate = baud_rate,
-    .data_bits = UART_DATA_8_BITS,
-    .parity = UART_PARITY_DISABLE,
-    .stop_bits = UART_STOP_BITS_1,
-    .flow_ctrl = UART_HW_FLOWCTRL_DISABLE
-  };
+      .baud_rate = baud_rate,
+      .data_bits = UART_DATA_8_BITS,
+      .parity = UART_PARITY_DISABLE,
+      .stop_bits = UART_STOP_BITS_1,
+      .flow_ctrl = UART_HW_FLOWCTRL_DISABLE};
   uart_param_config(UART_NUM, &uart_config);
   uart_set_pin(UART_NUM, uart_tx_pin, uart_rx_pin, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
   uart_driver_install(UART_NUM, RX_BUF_SIZE, TX_BUF_SIZE, UART_QUEUE_LENGTH, &uart_queue, ESP_INTR_FLAG_LOWMED);
   uart_set_rx_timeout(UART_NUM, 50);
-} 
+}
 
-void uart_frame_init(int32_t rx, int32_t tx, int baud) {
+void uart_frame_init(int32_t rx, int32_t tx, int baud)
+{
   baud_rate = baud;
   uart_rx_pin = rx;
   uart_tx_pin = tx;
@@ -66,12 +68,14 @@ void uart_frame_init(int32_t rx, int32_t tx, int baud) {
   xTaskCreatePinnedToCore(uart_frame_send_task, "uart_frame_send_task", 2 * 1024, NULL, 1, NULL, 0);
 }
 
-void uart_update_pin(int32_t rx, int32_t tx) {
+void uart_update_pin(int32_t rx, int32_t tx)
+{
   uart_set_pin(UART_NUM, tx, rx, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
 }
 
-typedef enum {
-  kWaitStart = 0x00, 
+typedef enum
+{
+  kWaitStart = 0x00,
   kRecvLenght,
   kLenghtCheck,
   kRecvCMD,
@@ -80,29 +84,33 @@ typedef enum {
   kSuccess,
 } frame_state_t;
 
-static void uart_frame_send_task(void *arg) {
+static void uart_frame_send_task(void *arg)
+{
   UartFrame_t frame;
-  
-  for (;;) {
+
+  for (;;)
+  {
     xQueueReceive(uart_buffer_queue, &frame, portMAX_DELAY);
     uart_wait_tx_done(UART_NUM, portMAX_DELAY);
     uart_write_bytes(UART_NUM, (const char *)frame.buffer, frame.len);
     uart_wait_tx_done(UART_NUM, portMAX_DELAY);
     frame_post_callback(frame.buffer[7]);
-    if (frame.free_buffer) {
+    if (frame.free_buffer)
+    {
       free(frame.buffer);
     }
   }
   vTaskDelete(NULL);
 }
 
-static void uart_frame_task(void *arg) {
+static void uart_frame_task(void *arg)
+{
   uart_event_t xEvent;
   // uint32_t buf_pos = 0;
 
-  uint8_t *buf = (uint8_t *)heap_caps_calloc(FRAME_MAX_SIZE, sizeof(uint8_t),  MALLOC_CAP_DEFAULT | MALLOC_CAP_INTERNAL);
+  uint8_t *buf = (uint8_t *)heap_caps_calloc(FRAME_MAX_SIZE, sizeof(uint8_t), MALLOC_CAP_DEFAULT | MALLOC_CAP_INTERNAL);
   uint8_t *recv_buf = (uint8_t *)malloc(1024 * sizeof(uint8_t));
-  uint8_t* ptr = recv_buf;
+  uint8_t *ptr = recv_buf;
   uint32_t packet_pos = 0;
   uint8_t packet_ahead[] = {PACK_FIRST_BYTE, PACK_SECOND_BYTE};
   uint32_t frame_length = 0;
@@ -112,149 +120,177 @@ static void uart_frame_task(void *arg) {
   buf[1] = PACK_SECOND_BYTE;
   frame_state_t frame_state = kWaitStart;
 
-  for(;;) {
-    if (xQueueReceive(uart_queue, (void*)&xEvent, portMAX_DELAY) == pdTRUE) {
-      switch(xEvent.type) {
-        case UART_DATA: {
-          uart_read_bytes(UART_NUM, recv_buf, xEvent.size, portMAX_DELAY);
-          ptr = recv_buf;
-          size = xEvent.size;
-          while (size) {
-            switch (frame_state) {
-              case kWaitStart:
-                buf[packet_pos] = *ptr;
-                ptr += 1;
-                size -= 1;
+  for (;;)
+  {
+    if (xQueueReceive(uart_queue, (void *)&xEvent, portMAX_DELAY) == pdTRUE)
+    {
+      switch (xEvent.type)
+      {
+      case UART_DATA:
+      {
+        uart_read_bytes(UART_NUM, recv_buf, xEvent.size, portMAX_DELAY);
+        ptr = recv_buf;
+        size = xEvent.size;
+        while (size)
+        {
+          switch (frame_state)
+          {
+          case kWaitStart:
+            buf[packet_pos] = *ptr;
+            ptr += 1;
+            size -= 1;
 
-                if (buf[packet_pos] == packet_ahead[packet_pos]) {
-                  packet_pos += 1;
-                  if (packet_pos == 2) {
-                    frame_length = 0;
-                    frame_state = kRecvLenght;
-
-                  }
-                } else {
-                  packet_pos = 0;
-                }
-                break;
-
-              case kRecvLenght:
-                buf[packet_pos] = *ptr;
-                ptr += 1;
-                size -= 1;
-                packet_pos += 1;
-                if (packet_pos == (2 + 4)) {
-                  crc_xor = 0x000;
-                  frame_state = kLenghtCheck;
-                }
-                break;
-
-              case kLenghtCheck:
-                buf[packet_pos] = *ptr;
-                ptr += 1;
-                size -= 1;
-                crc_xor = 0x00 ^ buf[2] ^ buf[3] ^ buf[4] ^ buf[5];
-                if (crc_xor == buf[packet_pos]) {
-                  packet_pos += 1;
-                  frame_length = (buf[2] << 24) | (buf[3] << 16) | (buf[4] << 8) | (buf[5] << 0);
-                  if (frame_length > FRAME_MAX_SIZE - 9) {
-                    packet_pos = 0;
-                    frame_state = kWaitStart;
-                  } else {
-                    frame_state = kRecvCMD;
-                  }
-                } else {
-                  packet_pos = 0;
-                  frame_state = kWaitStart;
-                }
-                break;
-
-              case kRecvCMD: {
-                buf[packet_pos] = *ptr;
-                ptr += 1;
-                size -= 1;
-                packet_pos += 1;
-                frame_state = kRecvData;
-                break;
+            if (buf[packet_pos] == packet_ahead[packet_pos])
+            {
+              packet_pos += 1;
+              if (packet_pos == 2)
+              {
+                frame_length = 0;
+                frame_state = kRecvLenght;
               }
-              
-              case kRecvData:
-                while(size > 0) {
-                  buf[packet_pos] = *ptr;
-                  ptr += 1;
-                  size -= 1;
-                  packet_pos += 1;
-                  if (packet_pos == (frame_length + 6)) {
-                    frame_state = kCrcCheck;
-                    break;
-                  }
-                }
-                break;
+            }
+            else
+            {
+              packet_pos = 0;
+            }
+            break;
 
-              case kCrcCheck:
-                buf[packet_pos] = *ptr;
-                ptr += 1;
-                size -= 1;
-                crc_xor = 0x00;
+          case kRecvLenght:
+            buf[packet_pos] = *ptr;
+            ptr += 1;
+            size -= 1;
+            packet_pos += 1;
+            if (packet_pos == (2 + 4))
+            {
+              crc_xor = 0x000;
+              frame_state = kLenghtCheck;
+            }
+            break;
 
-                for (uint16_t i = 0; i < packet_pos; i++) {
-                  crc_xor = buf[i] ^ crc_xor;
-                }
-
-                if (crc_xor != buf[packet_pos]) {
-                  packet_pos = 0;
-                  frame_state = kWaitStart;
-                  break;
-                }
-
-              case kSuccess:
+          case kLenghtCheck:
+            buf[packet_pos] = *ptr;
+            ptr += 1;
+            size -= 1;
+            crc_xor = 0x00 ^ buf[2] ^ buf[3] ^ buf[4] ^ buf[5];
+            if (crc_xor == buf[packet_pos])
+            {
+              packet_pos += 1;
+              frame_length = (buf[2] << 24) | (buf[3] << 16) | (buf[4] << 8) | (buf[5] << 0);
+              if (frame_length > FRAME_MAX_SIZE - 9)
+              {
                 packet_pos = 0;
                 frame_state = kWaitStart;
-                frame_recv_callback(buf[7], &buf[8], frame_length - 2);
-                break;
-
-              default:
-                break;
+              }
+              else
+              {
+                frame_state = kRecvCMD;
+              }
             }
+            else
+            {
+              packet_pos = 0;
+              frame_state = kWaitStart;
+            }
+            break;
+
+          case kRecvCMD:
+          {
+            buf[packet_pos] = *ptr;
+            ptr += 1;
+            size -= 1;
+            packet_pos += 1;
+            frame_state = kRecvData;
+            break;
           }
-          break;
-        }
-        
-        case UART_FIFO_OVF: {
-          xQueueReset(uart_queue);
-          break;
-        }
 
-        case UART_BUFFER_FULL: {
-          uart_flush_input(UART_NUM);
-          xQueueReset(uart_queue);
-          break;
-        }
+          case kRecvData:
+            while (size > 0)
+            {
+              buf[packet_pos] = *ptr;
+              ptr += 1;
+              size -= 1;
+              packet_pos += 1;
+              if (packet_pos == (frame_length + 6))
+              {
+                frame_state = kCrcCheck;
+                break;
+              }
+            }
+            break;
 
-        case UART_BREAK: {
-          break;
-        }
+          case kCrcCheck:
+            buf[packet_pos] = *ptr;
+            ptr += 1;
+            size -= 1;
+            crc_xor = 0x00;
 
-        case UART_PARITY_ERR: {
-          break;
-        }
+            for (uint16_t i = 0; i < packet_pos; i++)
+            {
+              crc_xor = buf[i] ^ crc_xor;
+            }
 
-        case UART_FRAME_ERR: {
-          break;
-        }
+            if (crc_xor != buf[packet_pos])
+            {
+              packet_pos = 0;
+              frame_state = kWaitStart;
+              break;
+            }
 
-        default: {
-          break;
+          case kSuccess:
+            packet_pos = 0;
+            frame_state = kWaitStart;
+            frame_recv_callback(buf[7], &buf[8], frame_length - 2);
+            break;
+
+          default:
+            break;
+          }
         }
+        break;
+      }
+
+      case UART_FIFO_OVF:
+      {
+        xQueueReset(uart_queue);
+        break;
+      }
+
+      case UART_BUFFER_FULL:
+      {
+        uart_flush_input(UART_NUM);
+        xQueueReset(uart_queue);
+        break;
+      }
+
+      case UART_BREAK:
+      {
+        break;
+      }
+
+      case UART_PARITY_ERR:
+      {
+        break;
+      }
+
+      case UART_FRAME_ERR:
+      {
+        break;
+      }
+
+      default:
+      {
+        break;
+      }
       }
     }
   }
   vTaskDelete(NULL);
 }
 
-void uart_frame_send(uint8_t cmd, const uint8_t* frame, uint32_t len, bool wait_finish) {
+void uart_frame_send(uint8_t cmd, const uint8_t *frame, uint32_t len, bool wait_finish)
+{
   uint32_t out_len = 9 + len;
-  uint8_t* out_buf = (uint8_t *)malloc(sizeof(uint8_t) * out_len);
+  uint8_t *out_buf = (uint8_t *)malloc(sizeof(uint8_t) * out_len);
 
   out_buf[0] = PACK_FIRST_BYTE;
   out_buf[1] = PACK_SECOND_BYTE;
@@ -266,13 +302,16 @@ void uart_frame_send(uint8_t cmd, const uint8_t* frame, uint32_t len, bool wait_
   out_buf[7] = cmd;
   memcpy(&out_buf[8], frame, len);
   int xor_resilt = 0x00;
-  for (uint32_t i = 0; i < out_len - 1; i++) {
+  for (uint32_t i = 0; i < out_len - 1; i++)
+  {
     xor_resilt = out_buf[i] ^ xor_resilt;
   }
   out_buf[out_len - 1] = xor_resilt;
 
-  if (wait_finish) {
-    while (uxQueueMessagesWaiting(uart_buffer_queue)) {
+  if (wait_finish)
+  {
+    while (uxQueueMessagesWaiting(uart_buffer_queue))
+    {
       vTaskDelay(pdMS_TO_TICKS(10));
     }
   }
