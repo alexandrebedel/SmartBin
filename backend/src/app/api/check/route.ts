@@ -42,13 +42,16 @@ export async function POST(request: NextRequest) {
       type: result.trim(),
     });
   } catch (error) {
-    return Response.json({
-      message: "An error occured",
-      error:
-        error instanceof Error
-          ? (error as any).stdout || error.message
-          : "Unknown error message",
-      instance: error instanceof Error ? error.name : "GenericError",
-    });
+    return Response.json(
+      {
+        message: "An error occured",
+        error:
+          error instanceof Error
+            ? (error as any).stdout || error.message
+            : "Unknown error message",
+        instance: error instanceof Error ? error.name : "GenericError",
+      },
+      { status: 400 }
+    );
   }
 }
