@@ -7,7 +7,7 @@ WiFiClient client;
 QueueHandle_t Camera::frameQueue = NULL;
 String serverName = "192.168.43.105";
 String serverPath = "/api/check";
-const int serverPort = 5000;
+const int serverPort = 3000;
 
 void sendPhoto(JpegFrame_t frame);
 
@@ -136,8 +136,10 @@ void sendPhoto(JpegFrame_t frame)
             while (client.available())
             {
                 char c = client.read();
+                Serial.printf("%c", c);
                 if (c == '\n')
                 {
+                    Serial.println();
                     if (getAll.length() == 0)
                     {
                         state = true;
@@ -159,7 +161,6 @@ void sendPhoto(JpegFrame_t frame)
                 break;
             }
         }
-        Serial.println();
         client.stop();
         Serial.println(getBody);
     }
