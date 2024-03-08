@@ -1,0 +1,13 @@
+m5stack/M5Stack@^0.4.6
+HTTPClient
+m5stack/Module_GRBL_13.2@^0.0.3
+SPI
+nitek/NDEF_MFRC522@^2.0.0
+WiFiClientSecure
+SD
+WiFi
+espressif/esp32-camera@^2.0.4
+madhephaestus/ESP32Servo@^1.1.2
+FS
+Wire
+SPIFFS
