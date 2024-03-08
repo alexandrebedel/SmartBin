@@ -1,9 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export async function GET(route: { params: { binId: string } }) {
+export async function GET(
+  request: NextRequest,
+  route: { params: { binId: string } },
+) {
   try {
     const binId = route.params.binId;
+    console.log(binId);
 
     if (!binId) {
       return NextResponse.error();
