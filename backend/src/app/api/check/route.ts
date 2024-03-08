@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       `python3 ../ai/predict.py ${fullpath}`
     );
 
-    await fs.unlink(filepath);
+    // await fs.unlink(filepath);
     return Response.json({
       message: "Successfully found the trash type",
       type: result.trim(),
