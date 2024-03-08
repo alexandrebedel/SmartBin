@@ -3,10 +3,14 @@
 #include "camera.h"
 #include "filesystem.h"
 #include "network.h"
-#include "UDHttp.h"
+#include "servo.h"
+#include "GoPLUS2.h"
 
 unsigned long lastPictureTime = 0;
 const unsigned long pictureInterval = 6 * 1000;
+bool isopenA = false;
+bool isopenB = false;
+bool isopenC = false;
 bool runOnce = false;
 
 void setup()
@@ -15,6 +19,7 @@ void setup()
   Serial.begin(9600);
   init_network();
   Filesystem::init();
+  ServoMotor::init();
   Camera::init();
   lastPictureTime = millis();
 }
@@ -23,6 +28,7 @@ void loop()
 {
   unsigned long currentTime = millis();
 
+  M5.update();
   if (currentTime - lastPictureTime >= pictureInterval)
   {
     Serial.println("Taking a picture");
@@ -32,19 +38,21 @@ void loop()
   }
 }
 
-// void loop()
+// if (M5.BtnA.wasPressed())
 // {
-//   // put your main code here, to run repeatedly:
-//   UDHttp udh;
-//   // open file on sdcard to read
-//   root = SPIFFS.open("test.pdf");
-//   if (!root)
-//   {
-//     Serial.println("can not open file!");
-//     return;
-//   }
-//   // upload downloaded file to local server
-//   udh.upload("http://192.168.1.107:80/upload/upload.php", "test.pdf", root.size(), rdataf, progressf, responsef);
-//   root.close();
-//   Serial.printf("done uploading\n");
+//   isopenA ? ServoMotor::run(SERVO_NUM0, 90) : ServoMotor::run(SERVO_NUM0, 5);
+//   isopenA = !isopenA;
+//   Serial.println(isopenA);
+// }
+// if (M5.BtnB.wasPressed())
+// {
+//   isopenB ? ServoMotor::run(SERVO_NUM1, 90) : ServoMotor::run(SERVO_NUM1, 5);
+//   isopenB = !isopenB;
+//   Serial.println(isopenB);
+// }
+// if (M5.BtnC.wasPressed())
+// {
+//   isopenC ? ServoMotor::run(SERVO_NUM3, 90) : ServoMotor::run(SERVO_NUM3, 5);
+//   isopenC = !isopenC;
+//   Serial.println(isopenC);
 // }
