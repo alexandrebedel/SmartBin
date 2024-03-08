@@ -6,7 +6,7 @@
 #include "UDHttp.h"
 
 unsigned long lastPictureTime = 0;
-const unsigned long pictureInterval = 6000;
+const unsigned long pictureInterval = 6 * 1000;
 bool runOnce = false;
 
 void setup()
@@ -23,7 +23,7 @@ void loop()
 {
   unsigned long currentTime = millis();
 
-  if (currentTime - lastPictureTime >= pictureInterval && !runOnce)
+  if (currentTime - lastPictureTime >= pictureInterval)
   {
     Serial.println("Taking a picture");
     Camera::savePicture();
