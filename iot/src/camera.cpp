@@ -4,13 +4,9 @@
 #include "ArduinoJson.h"
 #include "servo.h"
 #include "GoPLUS2.h"
-
-WiFiClient client;
+#include "http.h"
 
 QueueHandle_t Camera::frameQueue = NULL;
-String serverName = "192.168.43.105";
-String serverPath = "/api/check?binId=alex";
-const int serverPort = 3000;
 
 void sendPhoto(JpegFrame_t frame);
 
@@ -35,7 +31,6 @@ void Camera::frameRecv(int cmd, const uint8_t *buf, int len)
 
 void Camera::savePicture()
 {
-    char filename[50];
     JpegFrame_t frame;
 
     if (xQueueReceive(Camera::getFrameQueue(), &frame, portMAX_DELAY) == pdFALSE)
@@ -49,80 +44,18 @@ void Camera::savePicture()
 
 void sendPhoto(JpegFrame_t frame)
 {
-    String getBody;
-    Serial.println("Connecting to server: " + serverName);
+    JsonDocument doc;
+    String body;
+    bool success = CustomHTTP::post(frame);
 
-    if (!client.connect(serverName.c_str(), serverPort))
+    if (!success)
     {
-        Serial.println("Connection to " + serverName + " failed");
+        Serial.println("Post request failed");
         return;
     }
+    body = CustomHTTP::getBody();
 
-    Serial.println("Connection successful!");
-    String head = "--SmartBin\r\nContent-Disposition: form-data; name=\"image\"; filename=\"photo.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
-    String tail = "\r\n--SmartBin--\r\n";
-
-    uint32_t imageLen = frame.size;
-    uint32_t extraLen = head.length() + tail.length();
-    uint32_t totalLen = imageLen + extraLen;
-
-    client.println("POST " + serverPath + " HTTP/1.1");
-    client.println("Host: " + serverName);
-    client.println("Content-Length: " + String(totalLen));
-    client.println("Content-Type: multipart/form-data; boundary=SmartBin");
-    client.println();
-    client.print(head);
-
-    uint8_t *fbBuf = frame.buf;
-    size_t fbLen = frame.size;
-    for (size_t n = 0; n < fbLen; n = n + 1024)
-    {
-        if (n + 1024 < fbLen)
-        {
-            client.write(fbBuf, 1024);
-            fbBuf += 1024;
-        }
-        else if (fbLen % 1024 > 0)
-        {
-            size_t remainder = fbLen % 1024;
-            client.write(fbBuf, remainder);
-        }
-    }
-    client.print(tail);
-
-    int timoutTimer = 10000;
-    long startTimer = millis();
-    bool captureJson = false;
-
-    while ((startTimer + timoutTimer) > millis())
-    {
-        Serial.print(".");
-        delay(100);
-        while (client.available())
-        {
-            char c = client.read();
-            // Serial.printf("%c", c);
-            if (c == '{')
-            {
-                captureJson = true;
-            }
-            if (c == '}')
-            {
-                getBody += String(c);
-                captureJson = false;
-            }
-            if (captureJson)
-            {
-                getBody += String(c);
-            }
-            startTimer = millis();
-        }
-    }
-    client.stop();
-
-    JsonDocument doc;
-
-    deserializeJson(doc, getBody);
+    deserializeJson(doc, body);
 
     String type = doc["type"].as<String>();
 
