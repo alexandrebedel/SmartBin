@@ -3,11 +3,17 @@
 
 #include <WiFiClient.h>
 #include "camera.h"
+#include "LCBUrl.h"
 
 class CustomHTTP
 {
 public:
-    static bool post(JpegFrame_t frame);
+    /**
+     * Starts a POST request from a image frame
+     *
+     * Sends the form-data `image` field
+     */
+    static bool post(LCBUrl url, JpegFrame_t frame);
     static String getBody();
 };
 

@@ -46,7 +46,11 @@ void sendPhoto(JpegFrame_t frame)
 {
     JsonDocument doc;
     String body;
-    bool success = CustomHTTP::post(frame);
+    LCBUrl url;
+
+    // Improve this code
+    url.setUrl("http://192.168.43.105:3000/api/check?binId=alex");
+    bool success = CustomHTTP::post(url, frame);
 
     if (!success)
     {
