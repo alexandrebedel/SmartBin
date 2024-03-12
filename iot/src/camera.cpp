@@ -9,7 +9,7 @@ WiFiClient client;
 
 QueueHandle_t Camera::frameQueue = NULL;
 String serverName = "192.168.43.105";
-String serverPath = "/api/check";
+String serverPath = "/api/check?binId=alex";
 const int serverPort = 3000;
 
 void sendPhoto(JpegFrame_t frame);
@@ -57,9 +57,10 @@ void sendPhoto(JpegFrame_t frame)
         Serial.println("Connection to " + serverName + " failed");
         return;
     }
+
     Serial.println("Connection successful!");
-    String head = "--RandomNerdTutorials\r\nContent-Disposition: form-data; name=\"image\"; filename=\"photo.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
-    String tail = "\r\n--RandomNerdTutorials--\r\n";
+    String head = "--SmartBin\r\nContent-Disposition: form-data; name=\"image\"; filename=\"photo.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
+    String tail = "\r\n--SmartBin--\r\n";
 
     uint32_t imageLen = frame.size;
     uint32_t extraLen = head.length() + tail.length();
@@ -68,7 +69,7 @@ void sendPhoto(JpegFrame_t frame)
     client.println("POST " + serverPath + " HTTP/1.1");
     client.println("Host: " + serverName);
     client.println("Content-Length: " + String(totalLen));
-    client.println("Content-Type: multipart/form-data; boundary=RandomNerdTutorials");
+    client.println("Content-Type: multipart/form-data; boundary=SmartBin");
     client.println();
     client.print(head);
 
@@ -122,11 +123,14 @@ void sendPhoto(JpegFrame_t frame)
     JsonDocument doc;
 
     deserializeJson(doc, getBody);
-    Serial.println("Got type " + doc["type"].as<String>());
 
-    if (doc["type"].as<String>() == "recyclable")
+    String type = doc["type"].as<String>();
+
+    if (type == "error")
     {
-
-        ServoMotor::open(SERVO_NUM0);
+        Serial.println("Couldn't retrieve the trash type");
+        return;
     }
+    Serial.println("Open type " + type + " which is the number " + SERVO_BOXES[type]);
+    ServoMotor::open(SERVO_BOXES[type]);
 }
