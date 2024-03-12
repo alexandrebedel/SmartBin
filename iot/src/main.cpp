@@ -18,13 +18,13 @@ void setup()
   ServoMotor::init();
   Camera::init();
   lastPictureTime = millis();
+  xTaskCreatePinnedToCore(ServoMotor::buttonsTask, "buttonsTask", 4096, NULL, 1, NULL, 0);
 }
 
 void loop()
 {
   unsigned long currentTime = millis();
 
-  M5.update();
   if (currentTime - lastPictureTime >= pictureInterval)
   {
     Serial.println("Taking a picture");
