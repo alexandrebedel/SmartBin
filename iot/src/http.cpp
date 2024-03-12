@@ -2,30 +2,23 @@
 #include "http.h"
 
 WiFiClient client;
-/**
- * TODO: move this to an env file or something like this
- */
-String serverName = "192.168.43.105";
-String serverPath = "/api/check?binId=alex";
-
 String head = "--SmartBin\r\nContent-Disposition: form-data; name=\"image\"; filename=\"photo.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
 String tail = "\r\n--SmartBin--\r\n";
 uint32_t extraLen = head.length() + tail.length();
 
-const int serverPort = 3000;
-
-bool CustomHTTP::post(JpegFrame_t frame)
+bool CustomHTTP::post(LCBUrl url, JpegFrame_t frame)
 {
     uint8_t *fbBuf = frame.buf;
     size_t fbLen = frame.size;
+    String host = url.getHost();
 
-    if (!client.connect(serverName.c_str(), serverPort))
+    if (!client.connect(host.c_str(), url.getPort()))
     {
-        Serial.println("Connection to " + serverName + " failed");
+        Serial.println("Connection to " + host + " failed");
         return false;
     }
-    client.println("POST " + serverPath + " HTTP/1.1");
-    client.println("Host: " + serverName);
+    client.println("POST " + url.getPath() + "?" + url.getQuery() + " HTTP/1.1");
+    client.println("Host: " + host);
     client.println("Content-Length: " + String(frame.size + extraLen));
     client.println("Content-Type: multipart/form-data; boundary=SmartBin");
     client.println();
