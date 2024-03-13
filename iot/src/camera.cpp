@@ -29,7 +29,7 @@ void Camera::frameRecv(int cmd, const uint8_t *buf, int len)
     }
 }
 
-void Camera::savePicture()
+void Camera::getImageBuffer()
 {
     JpegFrame_t frame;
 
@@ -42,7 +42,7 @@ void Camera::savePicture()
     free(frame.buf);
 }
 
-void sendPhoto(JpegFrame_t frame)
+void Camera::sendPhoto(JpegFrame_t frame)
 {
     JsonDocument doc;
     String body;
