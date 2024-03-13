@@ -28,7 +28,7 @@ void loop()
   if (currentTime - lastPictureTime >= pictureInterval)
   {
     Serial.println("Taking a picture");
-    Camera::savePicture();
+    Camera::getImageBuffer();
     lastPictureTime = currentTime;
   }
 }
