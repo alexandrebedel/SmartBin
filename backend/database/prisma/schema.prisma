@@ -7,10 +7,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TrashType {
+  recyclable
+  trash
+  glass
+}
+
 model Trash {
-  id        Int      @id @default(autoincrement())
-  binId     String   @db.VarChar(255)
-  trashType String   @db.VarChar(255)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        Int       @id @default(autoincrement())
+  binId     String    @db.VarChar(255)
+  trashType TrashType
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Admin {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
 }
