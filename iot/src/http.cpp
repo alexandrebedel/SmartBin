@@ -17,7 +17,7 @@ bool CustomHTTP::post(LCBUrl url, JpegFrame_t frame)
         Serial.println("Connection to " + host + " failed");
         return false;
     }
-    client.println("POST " + url.getPath() + "?" + url.getQuery() + " HTTP/1.1");
+    client.println("POST /" + url.getPath() + "?" + url.getQuery() + " HTTP/1.1");
     client.println("Host: " + host);
     client.println("Content-Length: " + String(frame.size + extraLen));
     client.println("Content-Type: multipart/form-data; boundary=SmartBin");
@@ -72,6 +72,7 @@ String CustomHTTP::getBody()
             startTimer = millis();
         }
     }
+    Serial.println();
     client.stop();
     return body;
 }

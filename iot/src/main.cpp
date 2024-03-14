@@ -4,9 +4,8 @@
 #include "filesystem.h"
 #include "network.h"
 #include "servo.h"
-#include "GoPLUS2.h"
 
-unsigned long lastPictureTime = 0;
+unsigned long lastPictureTime = millis();
 const unsigned long pictureInterval = 6 * 1000;
 
 void setup()
@@ -18,7 +17,7 @@ void setup()
   ServoMotor::init();
   Camera::init();
   lastPictureTime = millis();
-  xTaskCreatePinnedToCore(ServoMotor::buttonsTask, "buttonsTask", 4096, NULL, 1, NULL, 0);
+  xTaskCreatePinnedToCore(ServoMotor::buttonsTask, "buttonTask", 4096, NULL, 1, NULL, 0);
 }
 
 void loop()

@@ -5,8 +5,8 @@
 #include <map>
 #include <GoPLUS2.h>
 
-#define OPEN_ANGLE 90
-#define CLOSE_ANGLE 5
+#define CLOSE_ANGLE 90
+#define OPEN_ANGLE 5
 
 /**
  * Maps the Servo numbers to the given
@@ -17,9 +17,21 @@ extern std::map<String, int> SERVO_BOXES;
 class ServoMotor
 {
 private:
+    // static bool isRecycleOpen;
+    // static bool isTrashOpen;
+    // static bool isGlassOpen;
+
     static void run(uint8_t servo_num, uint8_t angle);
 
 public:
+    // static void setIsRecycleOpen(bool status) { ServoMotor::isRecycleOpen = status; };
+    // static void setIsTrashOpen(bool status) { ServoMotor::isTrashOpen = status; };
+    // static void setIsGlassOpen(bool status) { ServoMotor::isGlassOpen = status; };
+
+    // static bool getIsRecycleOpen() { return ServoMotor::isRecycleOpen; };
+    // static bool getIsTrashOpen() { return ServoMotor::isTrashOpen; };
+    // static bool getIsGlassOpen() { return ServoMotor::isGlassOpen; };
+
     /**
      * Initializes the Servo module
      */
