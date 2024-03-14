@@ -1,14 +1,10 @@
-#include "camera.h"
 #include "filesystem.h"
-#include "WiFiClient.h"
 #include "ArduinoJson.h"
 #include "servo.h"
 #include "GoPLUS2.h"
 #include "http.h"
 
 QueueHandle_t Camera::frameQueue = NULL;
-
-void sendPhoto(JpegFrame_t frame);
 
 // Rewriting the weak ref of the uart lib
 void frame_recv_callback(int cmd, const uint8_t *buf, int len)

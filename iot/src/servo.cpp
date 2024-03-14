@@ -2,7 +2,7 @@
 #include "servo.h"
 
 GoPlus2 goPlus;
-std::map<String, int> SERVO_BOXES = {{"recyclable", SERVO_NUM0}, {"glass", SERVO_NUM1}, {"trash", SERVO_NUM2}};
+std::map<String, int> SERVO_BOXES = {{"recyclable", SERVO_NUM0}, {"glass", SERVO_NUM1}, {"trash", SERVO_NUM3}};
 
 void ServoMotor::init()
 {
@@ -20,24 +20,22 @@ void ServoMotor::buttonsTask(void *pvParameters)
     {
         // Keep this on the main loop?
         M5.update();
-        if (M5.BtnA.isPressed() || M5.BtnA.wasPressed())
+        if (M5.BtnA.wasPressed())
         {
             Serial.println("Opening recycable");
             ServoMotor::open(SERVO_BOXES["recyclable"]);
         }
-        if (M5.BtnB.isPressed() || M5.BtnB.wasPressed())
+        if (M5.BtnB.wasPressed())
         {
             Serial.println("Opening glass");
             ServoMotor::open(SERVO_BOXES["glass"]);
         }
-        if (M5.BtnC.isPressed() || M5.BtnC.wasPressed())
+        if (M5.BtnC.wasPressed())
         {
             Serial.println("Opening trash");
             ServoMotor::open(SERVO_BOXES["trash"]);
         }
-        // Is this needed ??
-        // Introduce a small delay to avoid busy waiting and allow other tasks to run
-        vTaskDelay(50);
+        vTaskDelay(400);
     }
 }
 
