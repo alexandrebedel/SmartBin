@@ -1,7 +1,7 @@
 #ifndef LED_H
 #define LED_H
-#define PIN       26
-#define NUMPIXELS 3 
+#define PIN 26
+#define NUMPIXELS 3
 
 extern Adafruit_NeoPixel pixels;
 

@@ -1,10 +1,12 @@
 #include <M5Stack.h>
 #include "motion.h"
 
-void Motion::init() {
+void Motion::init()
+{
     pinMode(36, INPUT);
 }
 
-bool Motion::isDetected() {
+bool Motion::isDetected()
+{
     return (digitalRead(36) == 1);
 }
