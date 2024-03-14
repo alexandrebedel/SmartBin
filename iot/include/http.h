@@ -1,6 +1,8 @@
 #if !defined(HTTP_H)
 #define HTTP_H
 
+#undef min
+
 #include <WiFiClient.h>
 #include "camera.h"
 #include "LCBUrl.h"
