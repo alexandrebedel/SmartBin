@@ -1,25 +1,16 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/app/components/ui/card"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card";
+import Image from "next/image";
 
-export function DashboardCard() {
+export function DashboardCard({ image, title, data }: any) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Card Title</CardTitle>
-        <CardDescription>Card Description</CardDescription>
+        <Image className="object-contain w-[320px] h-[215px]" src={image} height={200} width={200} alt=""></Image>
       </CardHeader>
       <CardContent>
-        <p>Card Content</p>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>Total : {data}</CardDescription>
       </CardContent>
-      <CardFooter>
-        <p>Card Footer</p>
-      </CardFooter>
     </Card>
-  )
+  );
 }

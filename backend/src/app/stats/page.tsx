@@ -1,15 +1,29 @@
-// async function getData() {
-//   const res = await fetch("http://localhost:3000/api/trash");
-//   if (!res.ok) throw new Error("Failed to fetch data");
-//   return res.json();
-// }
+import { DashboardCard } from "../components/DashboardCard";
+import { trashStatsType } from "@/types";
+import DashboardTable from "../components/DashboardTable";
+
+export const revalidate = 0;
+
+async function getTrashStats() {
+  const res = await fetch("http://localhost:3000/api/trash");
+  if (!res.ok) throw new Error("Failed to fetch data");
+  return res.json();
+}
 
 export default async function Stats() {
-  // const datas = await getData();
+  const trashStats: trashStatsType = await getTrashStats();
 
   return (
-    <div>
-      <h1>Dashboard</h1>
+    <div className="pt-12">
+      <h1 className="text-2xl mb-14">Dashboard</h1>
+      <div className="flex gap-6 mb-20">
+        <DashboardCard image="/recyclable.png" title="Recyclable" data={trashStats.stats.totalTrashByType.recyclable} />
+        <DashboardCard image="/glass.jpeg" title="Glass" data={trashStats.stats.totalTrashByType.glass} />
+        <DashboardCard image="/trash.jpeg" title="Trash" data={trashStats.stats.totalTrashByType.trash} />
+      </div>
+      <div>
+        <DashboardTable bins={trashStats.stats.bins} />
+      </div>
     </div>
   );
 }
