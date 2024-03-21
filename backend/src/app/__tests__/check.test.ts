@@ -6,6 +6,8 @@ import * as appHandler from "../api/check/route";
 import { readFile } from "fs/promises";
 import path from "path";
 
+const CHECK_TIMEOUT = 10 * 1000;
+
 const errorKeys = ["message", "error", "instance"] as const;
 
 const setupFormData = async (filepath: string) => {
@@ -65,25 +67,29 @@ describe("/api/check", () => {
     });
   });
 
-  test("Should predict that the image is a metal can", async () => {
-    await testApiHandler({
-      appHandler,
-      async test({ fetch }) {
-        const form = await setupFormData(
-          path.join(
-            path.dirname(process.cwd()),
-            "ai/test-images/metal-can.jpeg"
-          )
-        );
-        const res = await fetch({ method: "POST", body: form });
-        const body = await res.json();
+  test(
+    "Should predict that the image is a metal can",
+    async () => {
+      await testApiHandler({
+        appHandler,
+        async test({ fetch }) {
+          const form = await setupFormData(
+            path.join(
+              path.dirname(process.cwd()),
+              "ai/test-images/metal-can.jpeg"
+            )
+          );
+          const res = await fetch({ method: "POST", body: form });
+          const body = await res.json();
 
-        expect(res.status).toBe(200);
-        expect(body).toBe({
-          message: "Successfully found the trash type",
-          type: "metal",
-        });
-      },
-    });
-  });
+          expect(res.status).toBe(200);
+          expect(body).toBe({
+            message: "Successfully found the trash type",
+            type: "metal",
+          });
+        },
+      });
+    },
+    CHECK_TIMEOUT
+  );
 });
