@@ -3,15 +3,24 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include "camera.h"
 
 class Filesystem
 {
 public:
+    static void init()
+    {
+        if (!SPIFFS.begin(true))
+        {
+            Serial.println("Failed to begin splifff my man");
+            return;
+        }
+    }
     /**
      * Writes a file on the microcontroller filesystem
      * and return a success boolean
      */
-    static bool writeFile(uint8_t *data, size_t size, const char *filename);
+    static File writeFile(JpegFrame_t frame, const char *filename);
     /**
      * Dumps a directory content
      */
