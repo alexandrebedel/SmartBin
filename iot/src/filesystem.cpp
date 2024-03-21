@@ -36,22 +36,23 @@ void Filesystem::dumpDirectory(const char *dirname)
         }
         file = root.openNextFile();
     }
+    file.close();
+    root.close();
 }
 
-bool Filesystem::writeFile(uint8_t *data, size_t size, const char *filename)
+File Filesystem::writeFile(JpegFrame_t frame, const char *filename)
 {
     File file = SPIFFS.open(filename, FILE_WRITE);
 
     if (!file)
     {
         Serial.println("Failed to open file for writing");
-        return false;
+        return (fs::File)NULL;
     }
-    if (file.write(data, size) != size)
+    if (file.write(frame.buf, frame.size) != frame.size)
     {
         Serial.println("Failed to write to file");
-        return false;
+        return (fs::File)NULL;
     }
-    file.close();
-    return true;
+    return file;
 }
