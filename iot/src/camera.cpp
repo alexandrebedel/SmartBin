@@ -1,18 +1,10 @@
-#include "camera.h"
 #include "filesystem.h"
-#include "WiFiClient.h"
 #include "ArduinoJson.h"
 #include "servo.h"
 #include "GoPLUS2.h"
-
-WiFiClient client;
+#include "http.h"
 
 QueueHandle_t Camera::frameQueue = NULL;
-String serverName = "192.168.43.105";
-String serverPath = "/api/check?binId=alex";
-const int serverPort = 3000;
-
-void sendPhoto(JpegFrame_t frame);
 
 // Rewriting the weak ref of the uart lib
 void frame_recv_callback(int cmd, const uint8_t *buf, int len)
@@ -33,104 +25,51 @@ void Camera::frameRecv(int cmd, const uint8_t *buf, int len)
     }
 }
 
-void Camera::savePicture()
+String Camera::detectTrashType()
 {
-    char filename[50];
+    String type;
     JpegFrame_t frame;
 
     if (xQueueReceive(Camera::getFrameQueue(), &frame, portMAX_DELAY) == pdFALSE)
     {
         Serial.println("Failed receiving xQueue");
-        return;
+        return "";
     }
-    sendPhoto(frame);
+    type = sendPhoto(frame);
+    Serial.println("Detected " + type);
     free(frame.buf);
+    return type;
 }
 
-void sendPhoto(JpegFrame_t frame)
+String Camera::sendPhoto(JpegFrame_t frame)
 {
-    String getBody;
-    Serial.println("Connecting to server: " + serverName);
-
-    if (!client.connect(serverName.c_str(), serverPort))
-    {
-        Serial.println("Connection to " + serverName + " failed");
-        return;
-    }
-
-    Serial.println("Connection successful!");
-    String head = "--SmartBin\r\nContent-Disposition: form-data; name=\"image\"; filename=\"photo.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
-    String tail = "\r\n--SmartBin--\r\n";
-
-    uint32_t imageLen = frame.size;
-    uint32_t extraLen = head.length() + tail.length();
-    uint32_t totalLen = imageLen + extraLen;
-
-    client.println("POST " + serverPath + " HTTP/1.1");
-    client.println("Host: " + serverName);
-    client.println("Content-Length: " + String(totalLen));
-    client.println("Content-Type: multipart/form-data; boundary=SmartBin");
-    client.println();
-    client.print(head);
-
-    uint8_t *fbBuf = frame.buf;
-    size_t fbLen = frame.size;
-    for (size_t n = 0; n < fbLen; n = n + 1024)
-    {
-        if (n + 1024 < fbLen)
-        {
-            client.write(fbBuf, 1024);
-            fbBuf += 1024;
-        }
-        else if (fbLen % 1024 > 0)
-        {
-            size_t remainder = fbLen % 1024;
-            client.write(fbBuf, remainder);
-        }
-    }
-    client.print(tail);
-
-    int timoutTimer = 10000;
-    long startTimer = millis();
-    bool captureJson = false;
-
-    while ((startTimer + timoutTimer) > millis())
-    {
-        Serial.print(".");
-        delay(100);
-        while (client.available())
-        {
-            char c = client.read();
-            // Serial.printf("%c", c);
-            if (c == '{')
-            {
-                captureJson = true;
-            }
-            if (c == '}')
-            {
-                getBody += String(c);
-                captureJson = false;
-            }
-            if (captureJson)
-            {
-                getBody += String(c);
-            }
-            startTimer = millis();
-        }
-    }
-    client.stop();
-
     JsonDocument doc;
+    String body;
+    LCBUrl url;
 
-    deserializeJson(doc, getBody);
+    // Improve this code
+    url.setUrl("http://192.168.43.105:3000/api/check?binId=alex");
+    bool success = CustomHTTP::post(url, frame);
+
+    if (!success)
+    {
+        Serial.println("Post request failed");
+        return "";
+    }
+    body = CustomHTTP::getBody();
+
+    Serial.println(body);
+    deserializeJson(doc, body);
 
     String type = doc["type"].as<String>();
 
     if (type == "error")
     {
         Serial.println("Couldn't retrieve the trash type");
-        return;
+        return "";
     }
-    Serial.println("Open type " + type + " which is the number " + SERVO_BOXES[type]);
+    Serial.println("Opening type " + type + " which is the number " + SERVO_BOXES[type]);
     ServoMotor::open(SERVO_BOXES[type]);
+    Serial.println("Fuck me " + type);
+    return type;
 }
