@@ -39,6 +39,7 @@ public:
     static void open(uint8_t servoNum);
     static void close(uint8_t servoNum);
     static void buttonsTask(void *pvParameters);
+    static bool isOpen(uint8_t servoNum);
 };
 
 #endif // SERVO_H
