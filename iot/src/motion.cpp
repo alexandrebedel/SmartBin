@@ -3,10 +3,10 @@
 
 void Motion::init()
 {
-    pinMode(36, INPUT);
+    pinMode(G16, INPUT);
 }
 
 bool Motion::isDetected()
 {
-    return (digitalRead(36) == 1);
+    return (digitalRead(G16) == 1);
 }
