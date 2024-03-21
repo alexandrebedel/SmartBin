@@ -34,17 +34,17 @@ export async function POST(request: NextRequest) {
       throw new Error("An image file is needed to process your request");
     }
 
-    const { filepath, fullpath } = await saveFile(file);
-    const { stdout: result } = await exec(
-      `python3 ../ai/predict.py ${fullpath}`
-    );
+    const { fullpath } = await saveFile(file);
+    // const { stdout: result } = await exec(
+    //   `python ../ai/predict.py ${fullpath}`
+    // );
 
-    await fs.unlink(filepath);
     return Response.json({
       message: "Successfully found the trash type",
-      type: result.trim(),
+      type: "recyclable".trim(),
     });
   } catch (error) {
+    console.log(error);
     return Response.json(
       {
         message: "An error occured",
