@@ -4,9 +4,14 @@
 #include "filesystem.h"
 #include "network.h"
 #include "servo.h"
+#include "motion.h"
+#include "led.h"
 
+bool closeTimeout = false;
 unsigned long lastPictureTime = millis();
 const unsigned long pictureInterval = 6 * 1000;
+unsigned long servoOpenTime = 0;
+unsigned long currentTime = millis();
 
 void setup()
 {
@@ -16,18 +21,30 @@ void setup()
   Filesystem::init();
   ServoMotor::init();
   Camera::init();
+  Motion::init();
+  Led::init();
   lastPictureTime = millis();
-  xTaskCreatePinnedToCore(ServoMotor::buttonsTask, "buttonTask", 4096, NULL, 1, NULL, 0);
+  xTaskCreatePinnedToCore(ServoMotor::buttonsTask, "buttonsTask", 4096, NULL, 1, NULL, 0);
 }
 
 void loop()
 {
-  unsigned long currentTime = millis();
+  String type = "";
 
-  if (currentTime - lastPictureTime >= pictureInterval)
+  if (Motion::isDetected())
   {
+    Led::on();
     Serial.println("Taking a picture");
-    Camera::getImageBuffer();
-    lastPictureTime = currentTime;
+    type = Camera::detectTrashType();
+    lastPictureTime = millis();
+    closeTimeout = true;
+  }
+  currentTime = millis();
+  if (currentTime - lastPictureTime >= 10 * 1000 && closeTimeout)
+  {
+    Serial.println("Closing the servo motor after 10 seconds");
+    Led::off();
+    ServoMotor::close(SERVO_BOXES[type]);
+    closeTimeout = false;
   }
 }
