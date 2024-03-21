@@ -1,10 +1,7 @@
-#include <Adafruit_NeoPixel.h>
 #include <M5Stack.h>
 #include "led.h"
 
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(
-    NUMPIXELS, PIN,
-    NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 void Led::init()
 {

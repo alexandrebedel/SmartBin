@@ -44,35 +44,21 @@ void ServoMotor::buttonsTask(void *pvParameters)
 
 void ServoMotor::open(uint8_t servoNum)
 {
-    // bool finalStatus = false;
-
     switch (servoNum)
     {
     case 0:
     {
-        // bool status = !ServoMotor::getIsRecycleOpen();
-
         isRecycleOpen = true;
-        // finalStatus = status;
-        // ServoMotor::setIsRecycleOpen(true);
         break;
     }
     case 1:
     {
-        // bool status = !ServoMotor::getIsGlassOpen();
-
         isGlassOpen = true;
-        // finalStatus = status;
-        // ServoMotor::setIsGlassOpen(true);
         break;
     }
     case 2:
     {
-        // bool status = !ServoMotor::getIsTrashOpen();
-
         isTrashOpen = true;
-        // finalStatus = status;
-        // ServoMotor::setIsTrashOpen(true);
         break;
     }
     }
@@ -103,4 +89,17 @@ void ServoMotor::close(uint8_t servoNum)
     }
     }
     ServoMotor::run(servoNum, CLOSE_ANGLE);
+}
+
+bool ServoMotor::isOpen(uint8_t servoNum)
+{
+    switch (servoNum)
+    {
+    case 0:
+        return isRecycleOpen;
+    case 1:
+        return isGlassOpen;
+    case 2:
+        return isTrashOpen;
+    }
 }
