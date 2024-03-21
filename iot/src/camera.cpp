@@ -25,20 +25,23 @@ void Camera::frameRecv(int cmd, const uint8_t *buf, int len)
     }
 }
 
-void Camera::getImageBuffer()
+String Camera::detectTrashType()
 {
+    String type;
     JpegFrame_t frame;
 
     if (xQueueReceive(Camera::getFrameQueue(), &frame, portMAX_DELAY) == pdFALSE)
     {
         Serial.println("Failed receiving xQueue");
-        return;
+        return "";
     }
-    sendPhoto(frame);
+    type = sendPhoto(frame);
+    Serial.println("Detected " + type);
     free(frame.buf);
+    return type;
 }
 
-void Camera::sendPhoto(JpegFrame_t frame)
+String Camera::sendPhoto(JpegFrame_t frame)
 {
     JsonDocument doc;
     String body;
@@ -51,10 +54,11 @@ void Camera::sendPhoto(JpegFrame_t frame)
     if (!success)
     {
         Serial.println("Post request failed");
-        return;
+        return "";
     }
     body = CustomHTTP::getBody();
 
+    Serial.println(body);
     deserializeJson(doc, body);
 
     String type = doc["type"].as<String>();
@@ -62,8 +66,10 @@ void Camera::sendPhoto(JpegFrame_t frame)
     if (type == "error")
     {
         Serial.println("Couldn't retrieve the trash type");
-        return;
+        return "";
     }
-    Serial.println("Open type " + type + " which is the number " + SERVO_BOXES[type]);
+    Serial.println("Opening type " + type + " which is the number " + SERVO_BOXES[type]);
     ServoMotor::open(SERVO_BOXES[type]);
+    Serial.println("Fuck me " + type);
+    return type;
 }
