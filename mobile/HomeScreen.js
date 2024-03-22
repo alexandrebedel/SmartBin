@@ -12,10 +12,8 @@ import {
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { LineChart } from "react-native-chart-kit";
 import Card from "./components/card";
-import { useNavigation } from "@react-navigation/native";
 
 export default function HomeScreen() {
-  const navigation = useNavigation();
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [showQRScreen, setShowQRScreen] = useState(true);
@@ -33,7 +31,7 @@ export default function HomeScreen() {
     setScanned(true);
 
     if (data === "ReactAppTest") {
-      alert("QR code is correct!");
+      // alert("QR code is correct!");
       // Rediriger vers la page d'accueil une fois que le QR code est scanné avec succès
       setShowQRScreen(false);
     }
@@ -49,6 +47,8 @@ export default function HomeScreen() {
   if (showQRScreen) {
     return (
       <View style={styles.container}>
+        {alert(`Scannez le QR code sur l'écran de la poubelle pour accéder à l'application`)}
+
         <CameraView
           onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
           barcodeScannerSettings={{
