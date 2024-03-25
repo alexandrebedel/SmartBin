@@ -9,8 +9,6 @@
 
 bool closeTimeout = false;
 unsigned long lastPictureTime = millis();
-const unsigned long pictureInterval = 6 * 1000;
-unsigned long servoOpenTime = 0;
 unsigned long currentTime = millis();
 
 void setup()
@@ -31,6 +29,7 @@ void loop()
 {
   String type = "";
 
+  // M5.Lcd.qrcode("smartbin://code");
   if (Motion::isDetected())
   {
     Led::on();
