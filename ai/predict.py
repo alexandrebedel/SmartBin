@@ -31,7 +31,7 @@ def main():
         return -1
 
     model = load_model(
-        os.path.dirname(os.path.abspath(__file__)) + "/trash_detection_model.keras"
+        os.path.dirname(os.path.abspath(__file__)) + "/model.h5"
     )
     print(get_class(sys.argv[1], model))
     return 0
