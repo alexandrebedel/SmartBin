@@ -2,6 +2,48 @@
 #include "FS.h"
 #include "SPIFFS.h"
 #include "filesystem.h"
+#include "UUID.h"
+
+// String generateUniqueId()
+// {
+//     UUID uuid;
+//     uuid.generate();
+
+//     String uniqueId = "";
+//     for (int i = 0; i < UUID_SIZE; i++)
+//     {
+//         uniqueId += String(uuid.data[i], HEX);
+//     }
+
+//     return uniqueId;
+// }
+
+String Filesystem::getBinId()
+{
+    String id;
+
+    // Check if unique ID file exists
+    if (SPIFFS.exists("/.smarbin/id"))
+    {
+        File idFile = SPIFFS.open("/.smartbin/id", "r");
+
+        if (idFile)
+        {
+            id = idFile.readString();
+            idFile.close();
+        }
+    }
+    else
+    {
+        // id = generateUID();
+        File idFile = SPIFFS.open("/.smartbin/id", "w");
+        if (idFile)
+        {
+            idFile.print(id);
+            idFile.close();
+        }
+    }
+}
 
 void Filesystem::dumpDirectory(const char *dirname)
 {
