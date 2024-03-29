@@ -4,26 +4,30 @@
 #include "filesystem.h"
 #include "UUID.h"
 
-// String generateUniqueId()
-// {
-//     UUID uuid;
-//     uuid.generate();
+UUID uuid;
+uint32_t start, stop, randomtime;
 
-//     String uniqueId = "";
-//     for (int i = 0; i < UUID_SIZE; i++)
-//     {
-//         uniqueId += String(uuid.data[i], HEX);
-//     }
+String generateUID()
+{
+    uint32_t seed1 = random(999999999);
+    uint32_t seed2 = random(999999999);
 
-//     return uniqueId;
-// }
+    start = micros();
+    uuid.seed(seed1, seed2);
+    stop = micros();
+    delay(100);
+    start = micros();
+    uuid.generate();
+    stop = micros();
+    delay(100);
+    return String(uuid.toCharArray());
+}
 
 String Filesystem::getBinId()
 {
-    String id;
+    String id = "";
 
-    // Check if unique ID file exists
-    if (SPIFFS.exists("/.smarbin/id"))
+    if (SPIFFS.exists("/.smartbin/id"))
     {
         File idFile = SPIFFS.open("/.smartbin/id", "r");
 
@@ -35,14 +39,16 @@ String Filesystem::getBinId()
     }
     else
     {
-        // id = generateUID();
         File idFile = SPIFFS.open("/.smartbin/id", "w");
+
         if (idFile)
         {
+            id = generateUID();
             idFile.print(id);
             idFile.close();
         }
     }
+    return id;
 }
 
 void Filesystem::dumpDirectory(const char *dirname)
