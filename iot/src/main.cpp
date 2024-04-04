@@ -9,15 +9,14 @@
 
 bool closeTimeout = false;
 unsigned long lastPictureTime = millis();
-const unsigned long pictureInterval = 6 * 1000;
-unsigned long servoOpenTime = 0;
 unsigned long currentTime = millis();
+String binId = "";
 
 void setup()
 {
   M5.begin();
   Serial.begin(9600);
-  init_network();
+  Network::init();
   Filesystem::init();
   ServoMotor::init();
   Camera::init();
@@ -31,6 +30,11 @@ void loop()
 {
   String type = "";
 
+  if (binId.isEmpty())
+  {
+    binId = Filesystem::getBinId();
+    M5.Lcd.qrcode(binId);
+  }
   if (Motion::isDetected())
   {
     Led::on();
