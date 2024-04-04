@@ -1,4 +1,11 @@
-import { StyleSheet, Text, View, ScrollView, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Dimensions,
+  Button,
+} from "react-native";
 import { StatusBar } from "expo-status-bar";
 import * as Progress from "react-native-progress";
 import {
@@ -10,14 +17,30 @@ import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { LineChart } from "react-native-chart-kit";
 import { Card } from "../components/Card";
 import { StatusItem } from "../components/StatusItem";
+import { useBinId } from "../hooks";
+import { useNavigation } from "@react-navigation/native";
 
-export default function HomeScreen(props: any) {
-  console.log(props);
+export default function HomeScreen() {
+  const navigation = useNavigation();
+  const id = useBinId();
+
+  if (!id) {
+    return (
+      <View>
+        <Text>No such bin id found</Text>
+        <Button
+          title="Scan your bin QR code"
+          onPress={() => navigation.navigate("Scanner")}
+        />
+      </View>
+    );
+  }
   return (
     <View style={{ flex: 1, paddingHorizontal: 15, backgroundColor: "white" }}>
       <StatusBar style="auto" />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{ marginTop: 30, marginBottom: 60 }}>
+          <Text>Got link: {id}</Text>
           <View
             style={{
               display: "flex",
