@@ -1,5 +1,5 @@
 import { Text } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import { LinkingOptions, NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import * as Linking from "expo-linking";
 import {
@@ -16,7 +16,9 @@ import HomeScreen from "./HomeScreen";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 const Tab = createBottomTabNavigator();
-const linking = { prefixes: [Linking.createURL("/")] };
+const linking: LinkingOptions<ReactNavigation.RootParamList> = {
+  prefixes: [Linking.createURL("/")],
+};
 const fonts = {
   Quicksand_300Light,
   Quicksand_400Regular,
@@ -40,7 +42,7 @@ export default function App() {
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
 
-            if (route.name === "DashBoard") {
+            if (route.name === "Dashboard") {
               iconName = focused ? faChartLine : faChartLine;
             } else if (route.name === "Settings") {
               iconName = focused ? faGear : faGear;
@@ -55,7 +57,7 @@ export default function App() {
           },
         })}
       >
-        <Tab.Screen name="DashBoard" component={HomeScreen} />
+        <Tab.Screen name="Dashboard" component={HomeScreen} />
         {/* <Tab.Screen name="Settings" component={QRCodeScreen} /> */}
       </Tab.Navigator>
     </NavigationContainer>
