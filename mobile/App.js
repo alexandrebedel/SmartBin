@@ -1,6 +1,7 @@
 import { StyleSheet, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import * as Linking from "expo-linking";
 import {
   Quicksand_300Light,
   Quicksand_400Regular,
@@ -14,8 +15,12 @@ import { faChartLine, faGear } from "@fortawesome/free-solid-svg-icons";
 import HomeScreen from "./HomeScreen";
 
 const Tab = createBottomTabNavigator();
+const prefix = Linking.createURL('/');
 
 export default function App() {
+  const linking = {
+    prefixes: [prefix],
+  };
   const [fontsLoaded] = useFonts({
     Quicksand_300Light,
     Quicksand_400Regular,
@@ -27,7 +32,7 @@ export default function App() {
     return <Text>Loading...</Text>;
   }
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
