@@ -1,4 +1,4 @@
-import { StyleSheet, Text } from "react-native";
+import { Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import * as Linking from "expo-linking";
@@ -13,21 +13,21 @@ import { useFonts } from "expo-font";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faChartLine, faGear } from "@fortawesome/free-solid-svg-icons";
 import HomeScreen from "./HomeScreen";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 const Tab = createBottomTabNavigator();
-const prefix = Linking.createURL('/');
+const linking = { prefixes: [Linking.createURL("/")] };
+const fonts = {
+  Quicksand_300Light,
+  Quicksand_400Regular,
+  Quicksand_500Medium,
+  Quicksand_600SemiBold,
+  Quicksand_700Bold,
+};
 
 export default function App() {
-  const linking = {
-    prefixes: [prefix],
-  };
-  const [fontsLoaded] = useFonts({
-    Quicksand_300Light,
-    Quicksand_400Regular,
-    Quicksand_500Medium,
-    Quicksand_600SemiBold,
-    Quicksand_700Bold,
-  });
+  const [fontsLoaded] = useFonts(fonts);
+
   if (!fontsLoaded) {
     return <Text>Loading...</Text>;
   }
@@ -35,6 +35,8 @@ export default function App() {
     <NavigationContainer linking={linking}>
       <Tab.Navigator
         screenOptions={({ route }) => ({
+          tabBarActiveTintColor: "lightseagreen",
+          tabBarInactiveTintColor: "gray",
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
 
@@ -43,14 +45,14 @@ export default function App() {
             } else if (route.name === "Settings") {
               iconName = focused ? faGear : faGear;
             }
-
-            // You can return any component that you like here!
             return (
-              <FontAwesomeIcon icon={iconName} size={size} color={color} />
+              <FontAwesomeIcon
+                icon={iconName as IconProp}
+                size={size}
+                color={color}
+              />
             );
           },
-          tabBarActiveTintColor: "lightseagreen",
-          tabBarInactiveTintColor: "gray",
         })}
       >
         <Tab.Screen name="DashBoard" component={HomeScreen} />
@@ -59,12 +61,3 @@ export default function App() {
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
