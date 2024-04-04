@@ -1,6 +1,10 @@
 #if !defined(NETWORK_h)
 #define NETWORK_h
 
-void init_network();
+class Network
+{
+public:
+    static void init();
+};
 
 #endif // NETWORK_h
