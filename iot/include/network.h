@@ -5,6 +5,7 @@ class Network
 {
 public:
     static void init();
+    static IPAddress getIp();
 };
 
 #endif // NETWORK_h
