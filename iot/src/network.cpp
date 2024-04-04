@@ -17,3 +17,8 @@ void Network::init()
     M5.Lcd.println("");
     M5.Lcd.println("Connected to WiFi network");
 }
+
+IPAddress Network::getIp()
+{
+    return WiFi.localIP();
+}
