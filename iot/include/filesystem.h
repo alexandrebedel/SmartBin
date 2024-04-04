@@ -12,10 +12,11 @@ public:
     {
         if (!SPIFFS.begin(true))
         {
-            Serial.println("Failed to begin splifff my man");
+            Serial.println("Failed to begin SPIFFS");
             return;
         }
     }
+    static String getBinId();
     /**
      * Writes a file on the microcontroller filesystem
      * and return a success boolean
