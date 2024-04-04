@@ -1,19 +1,4 @@
-import React, { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  Dimensions,
-  Button,
-} from "react-native";
-import {
-  CameraView,
-  Camera,
-  PermissionStatus,
-  BarcodeScanningResult,
-  BarcodeSettings,
-} from "expo-camera/next";
+import { StyleSheet, Text, View, ScrollView, Dimensions } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import * as Progress from "react-native-progress";
 import {
@@ -23,64 +8,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { LineChart } from "react-native-chart-kit";
-import { Card } from "./components/Card";
-import { StatusItem } from "./components/StatusItem";
+import { Card } from "../components/Card";
+import { StatusItem } from "../components/StatusItem";
 
-const BARCODE_SETTINGS = {
-  barcodeTypes: ["qr", "pdf417"],
-} satisfies BarcodeSettings;
-
-export default function HomeScreen() {
-  const [hasPermission, setHasPermission] = useState(false);
-  const [scanned, setScanned] = useState(false);
-  const [showQRScreen, setShowQRScreen] = useState(true);
-
-  useEffect(() => {
-    const getCameraPermissions = async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === PermissionStatus.GRANTED);
-    };
-
-    getCameraPermissions();
-  }, []);
-
-  const handleBarCodeScanned = ({ type, data }: BarcodeScanningResult) => {
-    setScanned(true);
-    console.log(data);
-    alert(`Found "${data}"`);
-    setShowQRScreen(false);
-    // if (data === "ReactAppTest") {
-    //   // alert("QR code is correct!");
-    //   // Rediriger vers la page d'accueil une fois que le QR code est scanné avec succès
-    //   setShowQRScreen(false);
-    // }
-  };
-
-  if (hasPermission === null) {
-    return <Text>Requesting for camera permission</Text>;
-  }
-  if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
-  }
-
-  if (showQRScreen) {
-    return (
-      <View style={styles.container}>
-        <CameraView
-          onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-          barcodeScannerSettings={BARCODE_SETTINGS}
-          style={StyleSheet.absoluteFillObject}
-        />
-        {scanned && (
-          <Button
-            title={"Tap to Scan Again"}
-            onPress={() => setScanned(false)}
-          />
-        )}
-      </View>
-    );
-  }
-
+export default function HomeScreen(props: any) {
+  console.log(props);
   return (
     <View style={{ flex: 1, paddingHorizontal: 15, backgroundColor: "white" }}>
       <StatusBar style="auto" />
