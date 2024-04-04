@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, ScrollView, Dimensions } from "react-native";
-import { CameraView, Camera } from "expo-camera/next";
+import { CameraView, Camera, PermissionStatus } from "expo-camera/next";
 import { StatusBar } from "expo-status-bar";
 import * as Progress from "react-native-progress";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -11,17 +11,17 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { LineChart } from "react-native-chart-kit";
-import Card from "./components/card";
+import Card from "./components/Card";
 
 export default function HomeScreen() {
-  const [hasPermission, setHasPermission] = useState(null);
+  const [hasPermission, setHasPermission] = useState(false);
   const [scanned, setScanned] = useState(false);
   const [showQRScreen, setShowQRScreen] = useState(true);
 
   useEffect(() => {
     const getCameraPermissions = async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === "granted");
+      setHasPermission(status === PermissionStatus.GRANTED);
     };
 
     getCameraPermissions();
@@ -47,7 +47,9 @@ export default function HomeScreen() {
   if (showQRScreen) {
     return (
       <View style={styles.container}>
-        {alert(`Scannez le QR code sur l'écran de la poubelle pour accéder à l'application`)}
+        {alert(
+          `Scannez le QR code sur l'écran de la poubelle pour accéder à l'application`
+        )}
 
         <CameraView
           onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
