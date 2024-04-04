@@ -12,6 +12,7 @@
                 "/Users/alexandrebedel/Desktop/Msc/esp/iot/src",
                 "/Users/alexandrebedel/Desktop/Msc/esp/iot/lib/uart_frame",
                 "/Users/alexandrebedel/Desktop/Msc/esp/iot/lib/GoPLUS2",
+                "/Users/alexandrebedel/Desktop/Msc/esp/iot/.pio/libdeps/m5stack-core-esp32/UUID",
                 "/Users/alexandrebedel/Desktop/Msc/esp/iot/.pio/libdeps/m5stack-core-esp32/Adafruit NeoPixel",
                 "/Users/alexandrebedel/Desktop/Msc/esp/iot/.pio/libdeps/m5stack-core-esp32/LCBUrl/include",
                 "/Users/alexandrebedel/Desktop/Msc/esp/iot/.pio/libdeps/m5stack-core-esp32/LCBUrl/src",
@@ -252,6 +253,7 @@
                     "/Users/alexandrebedel/Desktop/Msc/esp/iot/src",
                     "/Users/alexandrebedel/Desktop/Msc/esp/iot/lib/uart_frame",
                     "/Users/alexandrebedel/Desktop/Msc/esp/iot/lib/GoPLUS2",
+                    "/Users/alexandrebedel/Desktop/Msc/esp/iot/.pio/libdeps/m5stack-core-esp32/UUID",
                     "/Users/alexandrebedel/Desktop/Msc/esp/iot/.pio/libdeps/m5stack-core-esp32/Adafruit NeoPixel",
                     "/Users/alexandrebedel/Desktop/Msc/esp/iot/.pio/libdeps/m5stack-core-esp32/LCBUrl/include",
                     "/Users/alexandrebedel/Desktop/Msc/esp/iot/.pio/libdeps/m5stack-core-esp32/LCBUrl/src",
@@ -487,7 +489,7 @@
                 ]
             },
             "defines": [
-                "PLATFORMIO=60113",
+                "PLATFORMIO=60114",
                 "ARDUINO_M5Stack_Core_ESP32",
                 "HAVE_CONFIG_H",
                 "MBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\"",
