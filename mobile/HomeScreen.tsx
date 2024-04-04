@@ -1,9 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, Dimensions } from "react-native";
-import { CameraView, Camera, PermissionStatus } from "expo-camera/next";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Dimensions,
+  Button,
+} from "react-native";
+import {
+  CameraView,
+  Camera,
+  PermissionStatus,
+  BarcodeScanningResult,
+  BarcodeSettings,
+} from "expo-camera/next";
 import { StatusBar } from "expo-status-bar";
 import * as Progress from "react-native-progress";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faWineBottle,
   faBottleWater,
@@ -11,7 +23,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { LineChart } from "react-native-chart-kit";
-import Card from "./components/Card";
+import { Card } from "./components/Card";
+import { StatusItem } from "./components/StatusItem";
+
+const BARCODE_SETTINGS = {
+  barcodeTypes: ["qr", "pdf417"],
+} satisfies BarcodeSettings;
 
 export default function HomeScreen() {
   const [hasPermission, setHasPermission] = useState(false);
@@ -27,14 +44,16 @@ export default function HomeScreen() {
     getCameraPermissions();
   }, []);
 
-  const handleBarCodeScanned = ({ type, data }) => {
+  const handleBarCodeScanned = ({ type, data }: BarcodeScanningResult) => {
     setScanned(true);
-
-    if (data === "ReactAppTest") {
-      // alert("QR code is correct!");
-      // Rediriger vers la page d'accueil une fois que le QR code est scanné avec succès
-      setShowQRScreen(false);
-    }
+    console.log(data);
+    alert(`Found "${data}"`);
+    setShowQRScreen(false);
+    // if (data === "ReactAppTest") {
+    //   // alert("QR code is correct!");
+    //   // Rediriger vers la page d'accueil une fois que le QR code est scanné avec succès
+    //   setShowQRScreen(false);
+    // }
   };
 
   if (hasPermission === null) {
@@ -47,15 +66,9 @@ export default function HomeScreen() {
   if (showQRScreen) {
     return (
       <View style={styles.container}>
-        {alert(
-          `Scannez le QR code sur l'écran de la poubelle pour accéder à l'application`
-        )}
-
         <CameraView
           onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-          barcodeScannerSettings={{
-            barcodeTypes: ["qr", "pdf417"],
-          }}
+          barcodeScannerSettings={BARCODE_SETTINGS}
           style={StyleSheet.absoluteFillObject}
         />
         {scanned && (
@@ -140,7 +153,6 @@ export default function HomeScreen() {
               }}
               width={Dimensions.get("window").width} // from react-native
               height={220}
-              yAxisInterval={1} // optional, defaults to 1
               chartConfig={{
                 backgroundColor: "white",
                 backgroundGradientFrom: "white",
@@ -164,57 +176,41 @@ export default function HomeScreen() {
               fromZero={true}
             />
           </View>
+
           <Text style={styles.SectionTitle}>Recycling Summary</Text>
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginTop: 30,
-              marginBottom: 18,
-            }}
-          >
+          <View style={styles.flexBox}>
             <Card title="Glass Items" value="5 items" icon={faWineBottle} />
             <Card title="Plastic Items" value="8 items" icon={faBottleWater} />
           </View>
           <Card title="Other Items" value="7 items" icon={faAppleWhole} />
+
           <Text style={styles.SectionTitle}>Status</Text>
-          <View style={styles.StatusSections}>
-            <View style={styles.StatusIcons}>
-              <FontAwesomeIcon icon={faTrashCan} size={20} />
-            </View>
-            <View>
-              <Text style={styles.SimpleText}>Glass Container</Text>
-              <Text style={styles.CardText}>The bin is 70% full</Text>
-              <Text style={styles.CardText}>
-                Last item recolted: 07/03/2024
-              </Text>
-            </View>
-          </View>
-          <View style={styles.StatusSections}>
-            <View style={styles.StatusIcons}>
-              <FontAwesomeIcon icon={faTrashCan} size={20} />
-            </View>
-            <View>
-              <Text style={styles.SimpleText}>Plastic Container</Text>
-              <Text style={styles.CardText}>The bin is 40% full</Text>
-              <Text style={styles.CardText}>
-                Last item recolted: 03/03/2024
-              </Text>
-            </View>
-          </View>
-          <View style={styles.StatusSections}>
-            <View style={styles.StatusIcons}>
-              <FontAwesomeIcon icon={faTrashCan} size={20} />
-            </View>
-            <View>
-              <Text style={styles.SimpleText}>Other Items Container</Text>
-              <Text style={styles.CardText}>The bin is 20% full</Text>
-              <Text style={styles.CardText}>
-                Last item recolted: 06/03/2024
-              </Text>
-            </View>
-          </View>
+          <StatusItem
+            icon={faTrashCan}
+            title="Glass Container"
+            description={[
+              "The bin is 70% full",
+              "Last item recolted: 07/03/2024",
+            ]}
+          />
+
+          <StatusItem
+            icon={faTrashCan}
+            title="Plastic Container"
+            description={[
+              "The bin is 40% full",
+              "Last item recolted: 03/03/2024",
+            ]}
+          />
+
+          <StatusItem
+            icon={faTrashCan}
+            title="Other Items Container"
+            description={[
+              "The bin is 20% full",
+              "Last item recolted: 06/03/2024",
+            ]}
+          />
         </View>
       </ScrollView>
     </View>
@@ -228,6 +224,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  flexBox: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 30,
+    marginBottom: 18,
+  },
   SimpleText: {
     fontFamily: "Quicksand_500Medium",
     fontSize: 18,
@@ -236,13 +239,6 @@ const styles = StyleSheet.create({
     fontFamily: "Quicksand_700Bold",
     fontSize: 22,
     marginTop: 40,
-  },
-  StatusSections: {
-    display: "flex",
-    flexDirection: "row",
-    marginTop: 30,
-    alignItems: "flex-start",
-    gap: 10,
   },
   StatusIcons: {
     backgroundColor: "#F2F5F1",
