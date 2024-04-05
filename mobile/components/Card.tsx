@@ -1,15 +1,21 @@
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { FC } from "react";
+import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
-export default Card = ({ title, value, icon }) => {
-  return (
-    <TouchableOpacity style={styles.CardContainer}>
-      <FontAwesomeIcon icon={icon} size={22} color="lightseagreen" />
-      <Text style={styles.CardTitle}>{title}</Text>
-      <Text style={styles.CardText}>{value}</Text>
-    </TouchableOpacity>
-  );
+type CardProps = {
+  title: string;
+  icon: IconDefinition;
+  value: string;
 };
+
+export const Card: FC<CardProps> = ({ title, value, icon }) => (
+  <TouchableOpacity style={styles.CardContainer}>
+    <FontAwesomeIcon icon={icon} size={22} color="lightseagreen" />
+    <Text style={styles.CardTitle}>{title}</Text>
+    <Text style={styles.CardText}>{value}</Text>
+  </TouchableOpacity>
+);
 
 const styles = StyleSheet.create({
   CardTitle: {
