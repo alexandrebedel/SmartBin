@@ -1,21 +1,27 @@
 import { useEffect, useState } from "react";
-import * as Linking from "expo-linking";
+import { getBinId } from "../utils";
+import { useAsyncStorage } from "@react-native-async-storage/async-storage";
 
 /**
- * Returns the parsed bin id from the
- * deep link url
+ * Returns the binId either from the storage
+ * or the deep link URL
  */
 export const useBinId = () => {
   const [link, setLink] = useState<string | undefined>(undefined);
+  const { getItem, setItem } = useAsyncStorage("@bin-id");
 
   useEffect(() => {
     (async () => {
-      const link = (await Linking.getInitialURL())?.split("/--/")[1];
+      const item = await getItem();
 
-      if (!link) {
-        return;
+      if (!item) {
+        console.log("Trying to get bin id from deep link");
+        setLink(await getBinId());
+        if (link) setItem(link);
+      } else {
+        console.log("Using the bin id from the storage");
+        setLink(item);
       }
-      setLink(link);
     })();
   }, []);
 
