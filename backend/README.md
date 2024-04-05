@@ -24,9 +24,8 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 
 ```bash
 docker-compose up -d
-
-prisma migrate dev
-prisma generate
+npx prisma migrate dev
+npx prisma generate
 ```
 
 ## Learn More
