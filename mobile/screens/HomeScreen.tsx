@@ -4,7 +4,6 @@ import {
   View,
   ScrollView,
   Dimensions,
-  Button,
   Image,
   Pressable,
 } from "react-native";
@@ -21,10 +20,17 @@ import { Card } from "../components/Card";
 import { StatusItem } from "../components/StatusItem";
 import { useBinId } from "../hooks";
 import { useNavigation } from "@react-navigation/native";
+import Constants from "expo-constants";
+import { getBinId } from "../utils";
+
+const API_URL = Constants.expoConfig?.extra?.apiUrl as string | undefined;
 
 export default function HomeScreen() {
   const navigation = useNavigation();
   const id = useBinId();
+  // const test = useSR
+
+  console.log(API_URL, getBinId());
 
   if (!id) {
     return (
@@ -58,8 +64,8 @@ export default function HomeScreen() {
             marginBottom: 20,
           }}
         >
-          Veuillez scanner le QR Code situé sur l'écran de la poubelle pour
-          vous connecter
+          Veuillez scanner le QR Code situé sur l'écran de la poubelle pour vous
+          connecter
         </Text>
         <Pressable
           onPress={() => navigation.navigate("Scanner")}
