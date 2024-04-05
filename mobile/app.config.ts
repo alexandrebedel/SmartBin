@@ -21,7 +21,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         extra: {
           env: "development",
           production: false,
-          apiUrl: "http://10.68.247.12:3000/api",
+          apiUrl: "http://172.20.10.2:3000/api",
         },
       };
       break;

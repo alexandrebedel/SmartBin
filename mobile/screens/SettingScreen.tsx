@@ -1,12 +1,16 @@
 import { Text, View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faTrashCan, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { useAppContext } from "../contexts/AppContext";
 
 export default function Screen() {
-  const deleteBinId = () => {
-    console.log("Delete Bin ID");
+  const { removeId } = useAppContext();
+
+  const removeBin = () => {
+    removeId();
+    alert("Poubelle oubliée avec succès");
   };
 
   return (
@@ -38,9 +42,9 @@ export default function Screen() {
       >
         @Jean1234
       </Text>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.StatusSections}
-        onPress={() => deleteBinId()}
+        onPress={() => removeId()}
       >
         <View style={styles.StatusIcons}>
           <FontAwesomeIcon icon={faPenToSquare} size={20} />
@@ -51,11 +55,11 @@ export default function Screen() {
           size={20}
           style={styles.RightIcon}
         />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       <TouchableOpacity
         style={styles.StatusSections}
-        onPress={() => deleteBinId()}
+        onPress={() => removeBin()}
       >
         <View style={styles.StatusIcons}>
           <FontAwesomeIcon icon={faTrashCan} size={20} />
@@ -67,7 +71,8 @@ export default function Screen() {
           style={styles.RightIcon}
         />
       </TouchableOpacity>
-      <Text
+
+      {/* <Text
         style={{
           fontFamily: "Quicksand_700Bold",
           fontSize: 22,
@@ -76,10 +81,7 @@ export default function Screen() {
       >
         Support
       </Text>
-      <TouchableOpacity
-        style={styles.StatusSections}
-        onPress={() => deleteBinId()}
-      >
+      <TouchableOpacity style={styles.StatusSections}>
         <View style={styles.StatusIcons}>
           <FontAwesomeIcon icon={faTrashCan} size={20} />
         </View>
@@ -89,7 +91,7 @@ export default function Screen() {
           size={20}
           style={styles.RightIcon}
         />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 }
