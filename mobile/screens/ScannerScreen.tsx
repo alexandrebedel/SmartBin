@@ -6,16 +6,25 @@ import {
 import { useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { useCameraPermissions } from "../hooks";
+import { useAppContext } from "../contexts/AppContext";
+import { useNavigation } from "@react-navigation/native";
 
 const BARCODE_SETTINGS = { barcodeTypes: ["qr"] } satisfies BarcodeSettings;
 
 export default function Screen() {
+  const navigation = useNavigation();
+  const { registerId } = useAppContext();
   const hasPermission = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
 
   const handleBarCodeScanned = ({ data }: BarcodeScanningResult) => {
+    const id = data.split("/--/")[1];
+
     setScanned(true);
-    alert(data);
+    if (id) {
+      registerId(id);
+      navigation.goBack();
+    }
   };
 
   if (hasPermission === null) {
@@ -32,7 +41,7 @@ export default function Screen() {
         style={StyleSheet.absoluteFillObject}
       />
       {scanned && (
-        <Button title={"Tap to Scan Again"} onPress={() => setScanned(false)} />
+        <Button title="Tap to Scan Again" onPress={() => setScanned(false)} />
       )}
     </View>
   );

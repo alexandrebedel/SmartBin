@@ -1,4 +1,11 @@
-import { StyleSheet, Text, View, ScrollView, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Dimensions,
+  ActivityIndicator,
+} from "react-native";
 import { StatusBar } from "expo-status-bar";
 import * as Progress from "react-native-progress";
 import {
@@ -10,19 +17,31 @@ import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { LineChart } from "react-native-chart-kit";
 import { Card } from "../components/Card";
 import { StatusItem } from "../components/StatusItem";
-import { useBinId } from "../hooks";
 import Constants from "expo-constants";
 import { fetcher } from "../utils";
 import useSWR from "swr";
 import { NoBinId } from "../components/NoBinId";
+import { useAppContext } from "../contexts/AppContext";
 
-const API_URL = Constants.expoConfig?.extra?.apiUrl as string | undefined;
+const API_URL = Constants.expoConfig?.extra?.apiUrl as string;
 
 export default function HomeScreen() {
-  const id = useBinId();
-  const { data, isLoading } = useSWR(`${API_URL}/trash/${id}`, fetcher);
+  const { binId } = useAppContext();
+  const { data, isLoading } = useSWR(
+    binId ? `${API_URL}/trash/${binId}` : null,
+    fetcher
+  );
 
-  if (!id) {
+  console.log(JSON.stringify(data, undefined, 2));
+
+  if (isLoading) {
+    return (
+      <View style={styles.activity}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+  if (!binId) {
     return <NoBinId />;
   }
   return (
@@ -30,7 +49,6 @@ export default function HomeScreen() {
       <StatusBar style="auto" />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{ marginTop: 30, marginBottom: 60 }}>
-          <Text>Got link: {id}</Text>
           <View
             style={{
               display: "flex",
@@ -169,6 +187,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  activity: { flex: 1, justifyContent: "center", backgroundColor: "white" },
   flexBox: {
     display: "flex",
     flexDirection: "row",
