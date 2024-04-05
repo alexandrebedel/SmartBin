@@ -1,12 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  Dimensions,
-  Image,
-  Pressable,
-} from "react-native";
+import { StyleSheet, Text, View, ScrollView, Dimensions } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import * as Progress from "react-native-progress";
 import {
@@ -19,76 +11,19 @@ import { LineChart } from "react-native-chart-kit";
 import { Card } from "../components/Card";
 import { StatusItem } from "../components/StatusItem";
 import { useBinId } from "../hooks";
-import { useNavigation } from "@react-navigation/native";
 import Constants from "expo-constants";
-import { getBinId } from "../utils";
+import { fetcher } from "../utils";
+import useSWR from "swr";
+import { NoBinId } from "../components/NoBinId";
 
 const API_URL = Constants.expoConfig?.extra?.apiUrl as string | undefined;
 
 export default function HomeScreen() {
-  const navigation = useNavigation();
   const id = useBinId();
-  // const test = useSR
-
-  console.log(API_URL, getBinId());
+  const { data, isLoading } = useSWR(`${API_URL}/trash/${id}`, fetcher);
 
   if (!id) {
-    return (
-      <View style={{ flex: 1, padding: 15, backgroundColor: "white" }}>
-        <StatusBar style="auto" />
-        <Text
-          style={{
-            fontFamily: "Quicksand_700Bold",
-            fontSize: 40,
-            textAlign: "center",
-            marginBottom: 20,
-          }}
-        >
-          SMART BIN
-        </Text>
-        <Image
-          source={require("../assets/logo.png")}
-          style={{
-            width: 300,
-            height: 250,
-            alignSelf: "center",
-            marginLeft: 50,
-            marginBottom: 40,
-          }}
-        ></Image>
-        <Text
-          style={{
-            fontFamily: "Quicksand_500Medium",
-            fontSize: 16,
-            textAlign: "center",
-            marginBottom: 20,
-          }}
-        >
-          Veuillez scanner le QR Code situé sur l'écran de la poubelle pour vous
-          connecter
-        </Text>
-        <Pressable
-          onPress={() => navigation.navigate("Scanner")}
-          style={{
-            backgroundColor: "lightseagreen",
-            paddingVertical: 10,
-            paddingHorizontal: 15,
-            borderRadius: 10,
-            alignSelf: "center",
-          }}
-        >
-          <Text
-            style={{
-              color: "white",
-              fontFamily: "Quicksand_600SemiBold",
-              fontSize: 20,
-            }}
-          >
-            Se Connecter
-          </Text>
-        </Pressable>
-      </View>
-    );
+    return <NoBinId />;
   }
   return (
     <View style={{ flex: 1, paddingHorizontal: 15, backgroundColor: "white" }}>
