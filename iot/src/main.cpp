@@ -8,9 +8,13 @@
 #include "led.h"
 
 bool closeTimeout = false;
+String binId = "";
 unsigned long lastPictureTime = millis();
 unsigned long currentTime = millis();
-String binId = "";
+auto expoAddr = [](String binId, IPAddress ip = IPAddress(172, 20, 10, 2)) -> String
+{
+  return String("exp://") + ip.toString() + ":8081/--/" + binId;
+};
 
 void setup()
 {
@@ -33,7 +37,7 @@ void loop()
   if (binId.isEmpty())
   {
     binId = Filesystem::getBinId();
-    M5.Lcd.qrcode(binId);
+    M5.Lcd.qrcode(expoAddr(binId));
   }
   if (Motion::isDetected())
   {
