@@ -8,6 +8,7 @@ import {
 } from "@expo-google-fonts/quicksand";
 import { useFonts } from "expo-font";
 import { Routes } from "./Routes";
+import { AppProvider } from "./contexts/AppContext";
 
 const fonts = {
   Quicksand_300Light,
@@ -23,5 +24,9 @@ export default function App() {
   if (!fontsLoaded) {
     return <Text>Loading...</Text>;
   }
-  return <Routes />;
+  return (
+    <AppProvider>
+      <Routes />
+    </AppProvider>
+  );
 }

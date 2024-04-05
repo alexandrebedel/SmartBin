@@ -8,6 +8,7 @@ import { faChartLine, faGear } from "@fortawesome/free-solid-svg-icons";
 import { FC } from "react";
 import { LinkingOptions, NavigationContainer } from "@react-navigation/native";
 import * as Linking from "expo-linking";
+import { useAppContext } from "./contexts/AppContext";
 
 const Tab = createBottomTabNavigator();
 const { Navigator, Screen } = createNativeStackNavigator();
@@ -15,34 +16,40 @@ const linking: LinkingOptions<ReactNavigation.RootParamList> = {
   prefixes: [Linking.createURL("/")],
 };
 
-const Tabs: FC = () => (
-  <Tab.Navigator
-    initialRouteName="Dashboard"
-    screenOptions={{
-      tabBarActiveTintColor: "lightseagreen",
-      tabBarInactiveTintColor: "gray",
-    }}
-  >
-    <Tab.Screen
-      name="Dashboard"
-      component={HomeScreen}
-      options={{
-        tabBarIcon: ({ color, size }) => (
-          <FontAwesomeIcon icon={faChartLine} size={size} color={color} />
-        ),
+const Tabs: FC = () => {
+  const { binId } = useAppContext();
+
+  return (
+    <Tab.Navigator
+      initialRouteName="Dashboard"
+      screenOptions={{
+        tabBarActiveTintColor: "lightseagreen",
+        tabBarInactiveTintColor: "gray",
       }}
-    />
-    <Tab.Screen
-      name="Settings"
-      component={SettingScreen}
-      options={{
-        tabBarIcon: ({ color, size }) => (
-          <FontAwesomeIcon icon={faGear} size={size} color={color} />
-        ),
-      }}
-    />
-  </Tab.Navigator>
-);
+    >
+      <Tab.Screen
+        name="Dashboard"
+        component={HomeScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesomeIcon icon={faChartLine} size={size} color={color} />
+          ),
+        }}
+      />
+      {binId && (
+        <Tab.Screen
+          name="Settings"
+          component={SettingScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <FontAwesomeIcon icon={faGear} size={size} color={color} />
+            ),
+          }}
+        />
+      )}
+    </Tab.Navigator>
+  );
+};
 
 export const Routes: FC = () => (
   <NavigationContainer linking={linking}>
