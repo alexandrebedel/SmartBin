@@ -1,10 +1,11 @@
 #include <Wifi.h>
 #include <M5Stack.h>
+#include "network.h"
 
-const char *ssid = "HUAWEI P20 Pro";
-const char *password = "soleilsoleil";
+const char *ssid = "iPhone (8)";
+const char *password = "hihihihi";
 
-void init_network()
+void Network::init()
 {
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password);
@@ -15,4 +16,9 @@ void init_network()
     }
     M5.Lcd.println("");
     M5.Lcd.println("Connected to WiFi network");
+}
+
+IPAddress Network::getIp()
+{
+    return WiFi.localIP();
 }
