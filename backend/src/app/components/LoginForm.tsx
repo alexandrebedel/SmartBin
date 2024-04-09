@@ -45,7 +45,7 @@ export function LoginForm() {
       <Card>
         <CardHeader>
           <CardTitle>Connexion</CardTitle>
-          <CardDescription>Make changes to your account here. Click save when you're done.</CardDescription>
+          <CardDescription>Make changes to your account here. Click save when you&apos;re done.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
           <Form {...loginForm}>
