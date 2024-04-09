@@ -1,58 +1,68 @@
 #include <M5Stack.h>
-#include "core.h"
-#include "camera.h"
-#include "filesystem.h"
-#include "network.h"
-#include "servo.h"
-#include "motion.h"
-#include "led.h"
+#include <BLEDevice.h>
+#include <BLEServer.h>
+#include <BLEUtils.h>
+#include <BLE2902.h>
 
-bool closeTimeout = false;
-String binId = "";
-unsigned long lastPictureTime = millis();
-unsigned long currentTime = millis();
-auto expoAddr = [](String binId, IPAddress ip = IPAddress(172, 20, 10, 2)) -> String
+BLEServer *pServer = NULL;
+
+class MyServerCallbacks : public BLEServerCallbacks
 {
-  return String("exp://") + ip.toString() + ":8081/--/" + binId;
+  void onConnect(BLEServer *pServer)
+  {
+    Serial.println("Client connected");
+  }
+
+  void onDisconnect(BLEServer *pServer)
+  {
+    Serial.println("Client disconnected");
+  }
+};
+
+class MyCallbacks : public BLECharacteristicCallbacks
+{
+  void onWrite(BLECharacteristic *pCharacteristic)
+  {
+    std::string value = pCharacteristic->getValue();
+    Serial.print("Received data: ");
+    Serial.println(value.c_str());
+  }
 };
 
 void setup()
 {
   M5.begin();
   Serial.begin(9600);
-  Network::init();
-  Filesystem::init();
-  ServoMotor::init();
-  Camera::init();
-  Motion::init();
-  Led::init();
-  lastPictureTime = millis();
-  xTaskCreatePinnedToCore(ServoMotor::buttonsTask, "buttonsTask", 4096, NULL, 1, NULL, 0);
+
+  // Set the advertising name
+  BLEDevice::init("M5-Stack");
+  pServer = BLEDevice::createServer();
+  pServer->setCallbacks(new MyServerCallbacks());
+
+  // Create a service
+  BLEService *pService = pServer->createService("4fafc201-1fb5-459e-8fcc-c5c9c331914b");
+
+  // Create a characteristic
+  BLECharacteristic *pCharacteristic = pService->createCharacteristic(
+      "beb5483e-36e1-4688-b7f5-ea07361b26a8",
+      BLECharacteristic::PROPERTY_READ |
+          BLECharacteristic::PROPERTY_WRITE |
+          BLECharacteristic::PROPERTY_NOTIFY |
+          BLECharacteristic::PROPERTY_INDICATE);
+
+  // Add a descriptor
+  pCharacteristic->setCallbacks(new MyCallbacks());
+  pCharacteristic->addDescriptor(new BLE2902());
+
+  // Start the service
+  pService->start();
+  // Start advertising
+  pServer->getAdvertising()->start();
+
+  Serial.println("BLE server started");
 }
 
 void loop()
 {
-  String type = "";
-
-  if (binId.isEmpty())
-  {
-    binId = Filesystem::getBinId();
-    M5.Lcd.qrcode(expoAddr(binId));
-  }
-  if (Motion::isDetected())
-  {
-    Led::on();
-    Serial.println("Taking a picture");
-    type = Camera::detectTrashType();
-    lastPictureTime = millis();
-    closeTimeout = true;
-  }
-  currentTime = millis();
-  if (currentTime - lastPictureTime >= 10 * 1000 && closeTimeout)
-  {
-    Serial.println("Closing the servo motor after 10 seconds");
-    Led::off();
-    ServoMotor::close(SERVO_BOXES[type]);
-    closeTimeout = false;
-  }
+  // Handle BLE events
 }
