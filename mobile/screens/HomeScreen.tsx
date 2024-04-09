@@ -5,6 +5,7 @@ import {
   ScrollView,
   Dimensions,
   ActivityIndicator,
+  Button,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import * as Progress from "react-native-progress";
@@ -23,61 +24,104 @@ import useSWR from "swr";
 import { NoBinId } from "../components/NoBinId";
 import { useAppContext } from "../contexts/AppContext";
 import { BleManager } from "react-native-ble-plx";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Buffer } from "buffer";
 
 const manager = new BleManager();
 
 const API_URL = Constants.expoConfig?.extra?.apiUrl as string;
 
 export default function HomeScreen() {
+  const [isScanning, setIsScanning] = useState(true);
   const { binId } = useAppContext();
   const { data, isLoading } = useSWR(
     binId ? `${API_URL}/trash/${binId}` : null,
     fetcher
   );
 
-  const connect = async (id: string) => {
-    try {
-      await manager.connectToDevice(id).then((device) => {
-        console.log("Connected to device:", device.name);
-
-        // Add your logic for handling the connected device
-        return device.discoverAllServicesAndCharacteristics();
-      });
-    } catch (error) {
-      console.error("Error connecting to device:", error);
-    }
-  };
-
   useEffect(() => {
-    manager.startDeviceScan(null, null, async (error, device) => {
+    if (!isScanning) {
+      return;
+    }
+    console.log("Starting scan");
+    manager.startDeviceScan(null, null, async (error, scanDevice) => {
       if (error) {
         // Handle error (scanning will be stopped automatically)
+        console.error(error);
         return;
       }
 
-      if (device?.name === "M5-Stack") {
+      if (scanDevice?.name === "M5-Stack") {
+        manager.stopDeviceScan();
         console.log("Found m5");
-        // console.log(JSON.stringify(device, undefined, 2));
-        // const res = await device.connect();
+        try {
+          const device = await manager.connectToDevice(scanDevice.id);
+
+          if (await device.isConnected()) {
+            console.log("We are connected !!!");
+
+            await device
+              .discoverAllServicesAndCharacteristics()
+              .then((v) => v.services());
+
+            device.monitorCharacteristicForService(
+              "0693C92E-8A68-41AA-83E2-AA0B17F70168",
+              "1F5FF96C-AA4A-4159-BCE4-6C25350CB78B",
+              (error, characteristic) => {
+                if (error) {
+                  console.error("MONITOR", error);
+                }
+                if (!characteristic) {
+                  console.error("MONITOR: Failed to find a characteristic");
+                  return;
+                }
+                console.log("Found text from space", characteristic.value);
+                // console.log(
+                //   Buffer.from(characteristic.value, "base64").toString("utf8")
+                // );
+              }
+            );
+            // const services = await device
+            //   .discoverAllServicesAndCharacteristics()
+            //   .then((v) => v.services());
+
+            // const text = Buffer.from("testing").toString("base64");
+            // const char = await device.writeCharacteristicWithResponseForService(
+            //   "0693C92E-8A68-41AA-83E2-AA0B17F70168", // service UUID
+            //   "1F5FF96C-AA4A-4159-BCE4-6C25350CB78B", // characteristic UUID
+            //   text
+            // );
+            // console.log(char);
+          }
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setIsScanning(false);
+        }
 
         // await connect(device.);
         // console.log(JSON.stringify(res, undefined, 2));
-        manager.stopDeviceScan();
 
-        const Buffer = require("buffer").Buffer;
-        let encodedAuth = new Buffer("your text").toString("base64");
-        await device.writeCharacteristicWithResponseForService(
-          "4fafc201-1fb5-459e-8fcc-c5c9c331914b", // service UUID
-          "beb5483e-36e1-4688-b7f5-ea07361b26a8", // characteristic UUID
-          encodedAuth
-        );
+        // const Buffer = require("buffer").Buffer;
+        // let encodedAuth = new Buffer("your text").toString("base64");
+        // await device.writeCharacteristicWithResponseForService(
+        //   "4fafc201-1fb5-459e-8fcc-c5c9c331914b", // service UUID
+        //   "beb5483e-36e1-4688-b7f5-ea07361b26a8", // characteristic UUID
+        //   encodedAuth
+        // );
       }
     });
-  }, []);
+  }, [isScanning]);
 
   // console.log(JSON.stringify(data, undefined, 2));
 
+  if (!isScanning) {
+    return (
+      <View style={styles.activity}>
+        <Button title="Rescan" onPress={() => setIsScanning(true)} />
+      </View>
+    );
+  }
   if (isLoading) {
     return (
       <View style={styles.activity}>

@@ -83,9 +83,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.smartbin.app'
+    namespace 'app.smartbin.epi'
     defaultConfig {
-        applicationId 'com.smartbin.app'
+        applicationId 'app.smartbin.epi'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

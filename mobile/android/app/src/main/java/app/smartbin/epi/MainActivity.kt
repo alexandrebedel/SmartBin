@@ -1,4 +1,4 @@
-package com.smartbin.app
+package app.smartbin.epi
 
 import android.os.Build
 import android.os.Bundle
