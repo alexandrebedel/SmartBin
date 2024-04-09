@@ -5,6 +5,7 @@
 /.pnp
 .pnp.js
 .yarn/install-state.gz
+postgres-data
 
 # testing
 /coverage
@@ -37,3 +38,6 @@ next-env.d.ts
 
 # Smart Bin
 /uploads
+
+# Keep environment variables out of version control
+.env
