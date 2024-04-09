@@ -8,7 +8,9 @@ async function main() {
   const password = process.env.ADMIN_PASSWORD;
 
   if (!email || !password) {
-    console.error("Les variables d'environnement ADMIN_EMAIL ou ADMIN_PASSWORD ne sont pas définies.");
+    console.error(
+      "Les variables d'environnement ADMIN_EMAIL ou ADMIN_PASSWORD ne sont pas définies."
+    );
     return;
   }
 
