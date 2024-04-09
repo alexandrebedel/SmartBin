@@ -31,6 +31,7 @@ const Tabs: FC = () => {
         name="Dashboard"
         component={HomeScreen}
         options={{
+          headerShown: binId !== undefined,
           tabBarIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faChartLine} size={size} color={color} />
           ),

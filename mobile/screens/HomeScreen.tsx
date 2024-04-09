@@ -22,6 +22,10 @@ import { fetcher } from "../utils";
 import useSWR from "swr";
 import { NoBinId } from "../components/NoBinId";
 import { useAppContext } from "../contexts/AppContext";
+import { BleManager } from "react-native-ble-plx";
+import { useEffect } from "react";
+
+const manager = new BleManager();
 
 const API_URL = Constants.expoConfig?.extra?.apiUrl as string;
 
@@ -32,7 +36,47 @@ export default function HomeScreen() {
     fetcher
   );
 
-  console.log(JSON.stringify(data, undefined, 2));
+  const connect = async (id: string) => {
+    try {
+      await manager.connectToDevice(id).then((device) => {
+        console.log("Connected to device:", device.name);
+
+        // Add your logic for handling the connected device
+        return device.discoverAllServicesAndCharacteristics();
+      });
+    } catch (error) {
+      console.error("Error connecting to device:", error);
+    }
+  };
+
+  useEffect(() => {
+    manager.startDeviceScan(null, null, async (error, device) => {
+      if (error) {
+        // Handle error (scanning will be stopped automatically)
+        return;
+      }
+
+      if (device?.name === "M5-Stack") {
+        console.log("Found m5");
+        // console.log(JSON.stringify(device, undefined, 2));
+        // const res = await device.connect();
+
+        // await connect(device.);
+        // console.log(JSON.stringify(res, undefined, 2));
+        manager.stopDeviceScan();
+
+        const Buffer = require("buffer").Buffer;
+        let encodedAuth = new Buffer("your text").toString("base64");
+        await device.writeCharacteristicWithResponseForService(
+          "4fafc201-1fb5-459e-8fcc-c5c9c331914b", // service UUID
+          "beb5483e-36e1-4688-b7f5-ea07361b26a8", // characteristic UUID
+          encodedAuth
+        );
+      }
+    });
+  }, []);
+
+  // console.log(JSON.stringify(data, undefined, 2));
 
   if (isLoading) {
     return (
