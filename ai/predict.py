@@ -8,7 +8,7 @@ class_labels = ["cardboard", "glass", "metal", "paper", "plastic", "trash"]
 
 
 def get_class(img_path: str, model) -> str:
-    img = image.load_img(img_path, target_size=(512, 384))
+    img = image.load_img(img_path, target_size=(256, 256))
     img_array = image.img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
     img_array /= 255.0  # Normalisation des pixels
@@ -31,7 +31,9 @@ def main():
         return -1
 
     model = load_model(
-        os.path.dirname(os.path.abspath(__file__)) + "/model.h5"
+        os.path.dirname(os.path.abspath(__file__)) + "/alex.keras",
+        compile=False,
+        custom_objects={'input_shape': (256, 256, 3)}
     )
     print(get_class(sys.argv[1], model))
     return 0
