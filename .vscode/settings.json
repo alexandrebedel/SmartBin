@@ -1,5 +1,7 @@
 {
     "files.associations": {
         "vector": "cpp"
-    }
+    },
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.autoImportCompletions": false
 }
