@@ -1,6 +1,6 @@
 #ifndef LED_H
 #define LED_H
-#define PIN 17
+#define PIN 17 // Refers to the PORT C in the [0, X, 0] middle of the grove hub
 #define NUMPIXELS 3
 
 #include <Adafruit_NeoPixel.h>
