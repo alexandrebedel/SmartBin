@@ -28,14 +28,9 @@ def main():
         print("No such image found on the arguments list")
         return -1
 
-<<<<<<< HEAD
     model = load_model(os.path.dirname(
         os.path.abspath(__file__)) + "/alex.keras",
         compile=False
-=======
-    model = load_model(
-        os.path.dirname(os.path.abspath(__file__)) + "/trash_detection_model.keras"
->>>>>>> develop
     )
     print(get_class(sys.argv[1], model))
     return 0
