@@ -16,9 +16,11 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "app.smartbin.epi"
     },
     "android": {
+      "package": "app.smartbin.epi",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -32,6 +34,9 @@
         "projectId": "bacc3f1e-f1ff-4115-ab49-512ffe7c99bb"
       }
     },
-    "owner": "tiagoouu"
+    "owner": "tiagoouu",
+    "plugins": [
+      "react-native-ble-plx"
+    ]
   }
 }

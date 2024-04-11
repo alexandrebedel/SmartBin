@@ -1,0 +1,97 @@
+#include <M5Stack.h>
+#include <BLEDevice.h>
+#include <BLEServer.h>
+#include <BLEUtils.h>
+#include <BLE2902.h>
+#include <set>
+
+#define SERVICEUUID "0693C92E-8A68-41AA-83E2-AA0B17F70168"
+#define CHARACTERISTICUUID "1F5FF96C-AA4A-4159-BCE4-6C25350CB78B"
+
+BLEServer *pServer = NULL;
+BLEService *pService = NULL;
+BLECharacteristic *pCharacteristic = NULL;
+std::set<uint16_t> connectedClients;
+
+class MyServerCallbacks : public BLEServerCallbacks
+{
+  void onConnect(BLEServer *pServer)
+  {
+    // Get connId of the connected client
+    uint16_t connId = pServer->getConnId();
+    connectedClients.insert(connId);
+    Serial.print("Client connected with connId: ");
+    Serial.println(connId);
+
+    String data = "Hello from Arduino!";
+    pCharacteristic->setValue(data.c_str());
+    pCharacteristic->notify();
+  }
+
+  void onDisconnect(BLEServer *pServer)
+  {
+    // Get connId of the disconnected client
+    uint16_t connId = pServer->getConnId();
+    connectedClients.erase(connId);
+    Serial.print("Client disconnected with connId: ");
+    Serial.println(connId);
+  }
+};
+
+class MyCallbacks : public BLECharacteristicCallbacks
+{
+  void onWrite(BLECharacteristic *pCharacteristic)
+  {
+    std::string value = pCharacteristic->getValue();
+    Serial.print("Received data: ");
+    Serial.println(value.c_str());
+  }
+};
+
+void setup()
+{
+  M5.begin();
+  Serial.begin(9600);
+
+  // Set the advertising name
+  BLEDevice::init("M5-Stack");
+  pServer = BLEDevice::createServer();
+  pServer->setCallbacks(new MyServerCallbacks());
+
+  pService = pServer->createService(SERVICEUUID);
+  pCharacteristic = pService->createCharacteristic(
+      CHARACTERISTICUUID,
+      BLECharacteristic::PROPERTY_READ |
+          BLECharacteristic::PROPERTY_WRITE |
+          BLECharacteristic::PROPERTY_NOTIFY |
+          BLECharacteristic::PROPERTY_INDICATE);
+
+  // Add a descriptor
+  pCharacteristic->setCallbacks(new MyCallbacks());
+  pCharacteristic->addDescriptor(new BLE2902());
+
+  // Start the service
+  pService->start();
+  // Start advertising
+  pServer->getAdvertising()->start();
+
+  M5.Lcd.println("BLE server started");
+  Serial.println("BLE server started");
+}
+
+void loop()
+{
+  if (M5.BtnA.wasPressed())
+  {
+    M5.Lcd.println("Cleaning clients");
+    for (auto &id : connectedClients)
+    {
+      M5.Lcd.println("Cleaning client: " + id);
+      pServer->disconnect(id);
+    }
+    connectedClients.clear();
+    pServer->getAdvertising()->start();
+  }
+  M5.update();
+  // Handle BLE events
+}
