@@ -12,7 +12,7 @@ def get_class(img_path: str, model) -> str:
     img = cv2.imread(img_path)
     img = cv2.resize(img, (256, 256))
 
-    prediction = model.predict(np.expand_dims(img, axis=0))
+    prediction = model.predict(np.expand_dims(img, axis=0), verbose=0)
     predicted_class = class_labels[np.argmax(prediction)]
     if predicted_class in ["plastic", "cardboard", "paper"]:
         return "recyclable"
