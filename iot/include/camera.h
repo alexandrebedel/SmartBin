@@ -18,6 +18,7 @@ private:
 public:
     static void init()
     {
+        // Should be plugged into the PORT B
         uart_frame_init(36, 26, 1500000);
         Camera::frameQueue = xQueueCreate(2, sizeof(JpegFrame_t));
         pinMode(CAMERA_PIN, INPUT);
