@@ -26,5 +26,5 @@ To get started on this project please follow the READMEs on each parts of the pr
 #
 cd backend/ && npm install && cd - > /dev/null && echo "✅ Backend packages installed"
 python3.11 -m venv venv && source venv/bin/activate && echo "✅ Py environment setup successful"
-cd ai/ && pip install -r requirements.txt && cd - > /dev/null && echo "✅ Python packages installed successfully"
+pip install -r requirements.txt && cd - > /dev/null && echo "✅ Python packages installed successfully"
 ```

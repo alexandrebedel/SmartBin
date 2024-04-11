@@ -5,6 +5,7 @@
 venv/
 
 ai/dataset
+**/*resized*/
 
 .pio
 .vscode/.browse.c_cpp.db*
