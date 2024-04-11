@@ -29,7 +29,7 @@ def main():
         return -1
 
     model = load_model(os.path.dirname(
-        os.path.abspath(__file__)) + "/alex.keras",
+        os.path.abspath(__file__)) + "/model.keras",
         compile=False
     )
     print(get_class(sys.argv[1], model))
