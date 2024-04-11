@@ -17,3 +17,14 @@ To get started on this project please follow the READMEs on each parts of the pr
 [Setting up the AI](./ai/README.md)
 
 [Setting up the backend](./backend/README.md)
+
+
+# Quick start
+
+```bash
+# Please run the following commands line by line, at the root of the repo
+#
+cd backend/ && npm install && cd - && echo "✅ Backend packages installed"
+python3.11 -m venv venv && source venv/bin/activate && echo "✅ Py environment setup successful"
+cd ai/ && pip install -r requirements.txt && cd - && echo "✅ Python packages installed successfully"
+```
