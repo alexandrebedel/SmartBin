@@ -10,3 +10,7 @@ venv/
 .vscode/launch.json
 .vscode/ipch
 .DS_Store
+
+mobile/ios/Pods/
+
+input/cleanDataset
