@@ -48,7 +48,7 @@ String Camera::sendPhoto(JpegFrame_t frame)
     LCBUrl url;
 
     // Improve this code
-    url.setUrl("http://192.168.43.105:3000/api/check?binId=alex");
+    url.setUrl("http://172.20.10.2:3000/api/check?binId=alex");
     bool success = CustomHTTP::post(url, frame);
 
     if (!success)

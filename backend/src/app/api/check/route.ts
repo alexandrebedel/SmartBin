@@ -35,13 +35,13 @@ export async function POST(request: NextRequest) {
     }
 
     const { fullpath } = await saveFile(file);
-    // const { stdout: result } = await exec(
-    //   `python ../ai/predict.py ${fullpath}`
-    // );
+    const { stdout: result } = await exec(
+      `python ../ai/predict.py ${fullpath}`
+    );
 
     return Response.json({
       message: "Successfully found the trash type",
-      type: "recyclable".trim(),
+      type: result.trim(),
     });
   } catch (error) {
     console.log(error);

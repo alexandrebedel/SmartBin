@@ -6,6 +6,7 @@ venv/
 
 ai/dataset
 **/*resized*/
+esp-camera-images/
 
 .pio
 .vscode/.browse.c_cpp.db*

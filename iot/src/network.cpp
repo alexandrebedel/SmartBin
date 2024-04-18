@@ -2,8 +2,8 @@
 #include <M5Stack.h>
 #include "network.h"
 
-const char *ssid = "iPhone (8)";
-const char *password = "hihihihi";
+const char *ssid = "iPhone de Tiago (2)";
+const char *password = "test1234";
 
 void Network::init()
 {
