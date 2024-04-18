@@ -27,12 +27,29 @@ export default function StatsDetail({ params }: { params: { id: string } }) {
   ]);
 
 
+  const result = (statsDetails?.trashData.reduce((acc, cur) => {
+    // Obtenez le jour de la semaine
+    const date = new Date(cur.createdAt);
+    const dayOfWeek = date.getDay();
+  
+    // Incrémentez le compteur pour ce trashType à l'index correspondant au jour de la semaine
+    acc[cur.trashType][dayOfWeek]++;
+  
+    return acc;
+  }, {
+    glass: [0, 0, 0, 0, 0, 0, 0],
+    trash: [0, 0, 0, 0, 0, 0, 0],
+    recyclable: [0, 0, 0, 0, 0, 0, 0],
+  }) || {});
+
+
+
   return (
     <div>
       <div>My Post: {params.id}</div>
       <div>
       <PieChart data={statsDetails?.stats && Object.values(statsDetails?.stats.totalTrashByType)  || []} />
-      <AreaChart />
+      <AreaChart data={result} />
     </div>
     </div>
   );

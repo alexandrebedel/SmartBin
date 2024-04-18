@@ -1,23 +1,11 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
 
-const AreaChart = () => {
-  const [chartData] = useState({
-    series: [
-      {
-        name: 'Net Profit',
-        data: [44, 55, 57, 56, 61, 58, 63]
-      },
-      {
-        name: 'Revenue',
-        data: [76, 85, 101, 98, 87, 105, 91]
-      },
-      {
-        name: 'Free Cash Flow',
-        data: [35, 41, 36, 26, 45, 48, 52]
-      }
-    ],
+const AreaChart = ({data}) => {
+
+  const [chartData, setChartData] = useState({
+    series: [],
     options: {
       chart: {
         type: 'bar',
@@ -41,23 +29,33 @@ const AreaChart = () => {
       xaxis: {
         categories: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
       },
-      yaxis: {
-        title: {
-          text: '$ (thousands)'
-        }
-      },
+      yaxis: {},
       fill: {
         opacity: 1
       },
-      tooltip: {
-        y: {
-          formatter: function (val) {
-            return '$ ' + val + ' thousands';
-          }
-        }
-      }
+      tooltip: {}
     }
   });
+
+  useEffect(() => {
+    setChartData(prevState => ({
+      ...prevState,
+      series: [
+        {
+          name: 'recyclabe',
+          data: data.recyclable
+        },
+        {
+          name: 'déchets',
+          data: data.trash
+        },
+        {
+          name: 'Verre',
+          data: data.glass
+        }
+      ]
+    }));
+  }, [data]);
 
   return (
     <div>
