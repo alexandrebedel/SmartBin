@@ -16,9 +16,10 @@ async function saveFile(file: File) {
   const filepath = `./uploads/${file.name}`;
   const fullpath = `${cwd()}/uploads/${file.name}`;
   const buffer = Buffer.from(await file.arrayBuffer());
+  const base64 = buffer.toString("base64");
 
   await fs.writeFile(filepath, buffer);
-  return { filepath, fullpath };
+  return { filepath, fullpath, base64 };
 }
 
 export async function POST(request: NextRequest) {
@@ -40,7 +41,7 @@ export async function POST(request: NextRequest) {
       throw new Error("An image file is needed to process your request");
     }
 
-    const { fullpath } = await saveFile(file);
+    const { fullpath, base64 } = await saveFile(file);
     const { stdout: result } = await exec(
       `python ../ai/predict.py ${fullpath}`
     );
@@ -49,6 +50,7 @@ export async function POST(request: NextRequest) {
       data: {
         binId,
         trashType: result.trim() as TrashType,
+        image: base64,
       },
     });
     return Response.json({
