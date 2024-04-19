@@ -17,7 +17,7 @@ enum TrashType {
 model Trash {
   id        Int       @id @default(autoincrement())
   binId     String    @db.VarChar(255)
-  image     String
+  image     String?
   trashType TrashType
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
