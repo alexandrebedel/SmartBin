@@ -3,6 +3,8 @@ import { NextRequest } from "next/server";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { cwd } from "node:process";
+import prisma from "@/lib/prisma";
+import { TrashType } from "@prisma/client";
 
 fs.mkdir(path.join(process.cwd(), "uploads/"), { recursive: true });
 
@@ -21,9 +23,13 @@ async function saveFile(file: File) {
 
 export async function POST(request: NextRequest) {
   try {
+    const binId = new URL(request.url).searchParams.get("binId");
     const formData = await request.formData();
     const file = formData.get("image") as File;
 
+    if (!binId) {
+      throw new Error("Missing bin id");
+    }
     if (!file) {
       throw new Error("Failed to parse the form");
     }
@@ -39,6 +45,12 @@ export async function POST(request: NextRequest) {
       `python ../ai/predict.py ${fullpath}`
     );
 
+    await prisma.trash.create({
+      data: {
+        binId,
+        trashType: result.trim() as TrashType,
+      },
+    });
     return Response.json({
       message: "Successfully found the trash type",
       type: result.trim(),
@@ -56,5 +68,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 400 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }

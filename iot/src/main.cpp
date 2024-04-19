@@ -44,7 +44,7 @@ void loop()
     Serial.println("Detected something");
     Led::on();
     Serial.println("Taking a picture");
-    type = Camera::detectTrashType();
+    type = Camera::detectTrashType(binId);
     lastPictureTime = millis();
     closeTimeout = true;
   }
