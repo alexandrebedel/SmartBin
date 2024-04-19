@@ -33,8 +33,8 @@ public:
      * Saves the picture on the filesystem from the received
      * jpeg frame
      */
-    static String detectTrashType();
-    static String sendPhoto(JpegFrame_t frame);
+    static String detectTrashType(String binId);
+    static String sendPhoto(JpegFrame_t frame, String binId);
 };
 
 #endif // CAMERA_H

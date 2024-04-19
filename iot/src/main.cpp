@@ -28,24 +28,23 @@ void setup()
   Led::init();
   lastPictureTime = millis();
   xTaskCreatePinnedToCore(ServoMotor::buttonsTask, "buttonsTask", 4096, NULL, 1, NULL, 0);
-  Serial.println("Setip");
 }
 
 void loop()
 {
   String type = "";
 
-  // if (binId.isEmpty())
-  // {
-  //   binId = Filesystem::getBinId();
-  //   M5.Lcd.qrcode(expoAddr(binId));
-  // }
+  if (binId.isEmpty())
+  {
+    binId = Filesystem::getBinId();
+    M5.Lcd.qrcode(expoAddr(binId));
+  }
   if (Motion::isDetected())
   {
     Serial.println("Detected something");
     Led::on();
     Serial.println("Taking a picture");
-    type = Camera::detectTrashType();
+    type = Camera::detectTrashType(binId);
     lastPictureTime = millis();
     closeTimeout = true;
   }

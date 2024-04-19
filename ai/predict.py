@@ -14,6 +14,7 @@ def get_class(img_path: str, model) -> str:
 
     prediction = model.predict(np.expand_dims(img, axis=0), verbose=0)
     predicted_class = class_labels[np.argmax(prediction)]
+    # print(f"Predicted class: {predicted_class}")
     if predicted_class in ["plastic", "cardboard", "paper"]:
         return "recyclable"
     if predicted_class == "glass":
@@ -23,16 +24,39 @@ def get_class(img_path: str, model) -> str:
     return "error"
 
 
+def check_image(img_path: str, model, clean=False):
+    result = get_class(img_path, model)
+
+    if clean:
+        return print(result)
+    print(f"{img_path}: {result}")
+
+
+def process_folder(folder_path: str, model):
+    for root, _, files in os.walk(folder_path):
+        for file in files:
+            if not file.lower().endswith(('.png', '.jpg', '.jpeg')):
+                continue
+            check_image(os.path.join(root, file), model)
+
+
 def main():
     if len(sys.argv) != 2:
-        print("No such image found on the arguments list")
+        print("Usage: python predict.py <image_path_or_folder>")
         return -1
 
+    path = sys.argv[1]
     model = load_model(os.path.dirname(
-        os.path.abspath(__file__)) + "/alex.keras",
+        os.path.abspath(__file__)) + "/model-resized-20.keras",
         compile=False
     )
-    print(get_class(sys.argv[1], model))
+
+    if os.path.isfile(path):
+        check_image(path, model, True)
+    elif os.path.isdir(path):
+        process_folder(path, model)
+    else:
+        print(f"Invalid path: {path}")
     return 0
 
 

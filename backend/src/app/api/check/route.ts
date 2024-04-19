@@ -3,6 +3,8 @@ import { NextRequest } from "next/server";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { cwd } from "node:process";
+import prisma from "@/lib/prisma";
+import { TrashType } from "@prisma/client";
 
 fs.mkdir(path.join(process.cwd(), "uploads/"), { recursive: true });
 
@@ -14,16 +16,21 @@ async function saveFile(file: File) {
   const filepath = `./uploads/${file.name}`;
   const fullpath = `${cwd()}/uploads/${file.name}`;
   const buffer = Buffer.from(await file.arrayBuffer());
+  const base64 = buffer.toString("base64");
 
   await fs.writeFile(filepath, buffer);
-  return { filepath, fullpath };
+  return { filepath, fullpath, base64 };
 }
 
 export async function POST(request: NextRequest) {
   try {
+    const binId = new URL(request.url).searchParams.get("binId");
     const formData = await request.formData();
     const file = formData.get("image") as File;
 
+    if (!binId) {
+      throw new Error("Missing bin id");
+    }
     if (!file) {
       throw new Error("Failed to parse the form");
     }
@@ -34,14 +41,21 @@ export async function POST(request: NextRequest) {
       throw new Error("An image file is needed to process your request");
     }
 
-    const { fullpath } = await saveFile(file);
-    // const { stdout: result } = await exec(
-    //   `python ../ai/predict.py ${fullpath}`
-    // );
+    const { fullpath, base64 } = await saveFile(file);
+    const { stdout: result } = await exec(
+      `python ../ai/predict.py ${fullpath}`
+    );
 
+    await prisma.trash.create({
+      data: {
+        binId,
+        trashType: result.trim() as TrashType,
+        image: base64,
+      },
+    });
     return Response.json({
       message: "Successfully found the trash type",
-      type: "recyclable".trim(),
+      type: result.trim(),
     });
   } catch (error) {
     console.log(error);
@@ -56,5 +70,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 400 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }
