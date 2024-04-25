@@ -7,10 +7,11 @@ type CardProps = {
   title: string;
   icon: IconDefinition;
   value: string;
+  onPress: () => void;
 };
 
-export const Card: FC<CardProps> = ({ title, value, icon }) => (
-  <TouchableOpacity style={styles.CardContainer}>
+export const Card: FC<CardProps> = ({ title, value, icon, onPress }) => (
+  <TouchableOpacity style={styles.CardContainer} onPress={onPress}>
     <FontAwesomeIcon icon={icon} size={22} color="lightseagreen" />
     <Text style={styles.CardTitle}>{title}</Text>
     <Text style={styles.CardText}>{value}</Text>
