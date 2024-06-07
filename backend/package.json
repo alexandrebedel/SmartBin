@@ -12,7 +12,7 @@
     "prisma:g": "prisma generate",
     "prisma:m": "prisma migrate dev",
     "prisma:s": "prisma studio",
-    "vercel-build": "prisma generate && prisma db push && prisma db seed && next build"
+    "vercel-build": "prisma generate && prisma migrate dev && prisma db seed && next build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
