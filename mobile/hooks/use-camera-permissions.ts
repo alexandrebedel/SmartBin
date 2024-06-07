@@ -1,4 +1,4 @@
-import { Camera, PermissionStatus } from "expo-camera/next";
+import { Camera, PermissionStatus } from "expo-camera";
 import { useEffect, useState } from "react";
 
 export const useCameraPermissions = () => {

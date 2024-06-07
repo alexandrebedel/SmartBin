@@ -2,7 +2,7 @@ import {
   BarcodeScanningResult,
   BarcodeSettings,
   CameraView,
-} from "expo-camera/next";
+} from "expo-camera";
 import { useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { useCameraPermissions } from "../hooks";
