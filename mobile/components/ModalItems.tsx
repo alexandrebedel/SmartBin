@@ -41,11 +41,11 @@ export const ModalItems: FC<ModalItemsProps> = ({
           >
             <FontAwesomeIcon icon={faClose} size={22} color="lightseagreen" />
           </Pressable>
-          <Text style={styles.modalTitle}>Recycled Items</Text>
+          <Text style={styles.modalTitle}>Élément recyclé</Text>
           <ScrollView>
             {trashData === undefined || trashData.length === 0 ? (
               <Text style={{ fontSize: 16, textAlign: "center" }}>
-                No items recolted yet
+                Aucun élément récolté
               </Text>
             ) : (
               trashData.reverse().map((item, index) => (
@@ -80,10 +80,10 @@ export const ModalItems: FC<ModalItemsProps> = ({
                   <View>
                     <Text style={styles.SimpleText}>
                       {item.trashType === "recyclable"
-                        ? "Recyclable item"
+                        ? "Élément Recyclable"
                         : item.trashType === "glass"
-                        ? "Glass item"
-                        : "Other item"}
+                        ? "Élément de Verre "
+                        : "Élément Organique"}
                     </Text>
                     <Text>
                       Thrown{" "}

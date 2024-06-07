@@ -140,8 +140,8 @@ export default function HomeScreen() {
               marginBottom: 20,
             }}
           >
-            <Text style={styles.SimpleText}>Fill Level</Text>
-            <Text style={styles.SimpleText}>80% full</Text>
+            <Text style={styles.SimpleText}>Niveau de remplissage</Text>
+            <Text style={styles.SimpleText}>80% remplie</Text>
           </View>
           <Progress.Bar
             progress={0.8}
@@ -159,7 +159,7 @@ export default function HomeScreen() {
             }}
           >
             <Text style={styles.SimpleText}>Status</Text>
-            <Text style={styles.SimpleText}>Full</Text>
+            <Text style={styles.SimpleText}>Remplie</Text>
           </View>
           <View
             style={{
@@ -168,8 +168,8 @@ export default function HomeScreen() {
               justifyContent: "space-between",
             }}
           >
-            <Text style={styles.SimpleText}>Products Recycled</Text>
-            <Text style={styles.SimpleText}>{data.totalTrash} items</Text>
+            <Text style={styles.SimpleText}>Produits Recyclés</Text>
+            <Text style={styles.SimpleText}>{data.totalTrash} éléments</Text>
           </View>
           <View>
             <LineChart
@@ -207,22 +207,22 @@ export default function HomeScreen() {
             />
           </View>
 
-          <Text style={styles.SectionTitle}>Recycling Summary</Text>
+          <Text style={styles.SectionTitle}>Sommaire de recyclage</Text>
           <View style={styles.flexBox}>
             <Card
               onPress={() => {
                 setModalVisible(true), setModalType("glass");
               }}
-              title="Glass Items"
-              value={data.stats.totalTrashByType.glass + " items"}
+              title="Verre"
+              value={data.stats.totalTrashByType.glass + " éléments"}
               icon={faWineBottle}
             />
             <Card
               onPress={() => {
                 setModalVisible(true), setModalType("recyclable");
               }}
-              title="Recyclable Items"
-              value={data.stats.totalTrashByType.recyclable + " items"}
+              title="Recyclable"
+              value={data.stats.totalTrashByType.recyclable + " éléments"}
               icon={faBottleWater}
             />
           </View>
@@ -230,19 +230,19 @@ export default function HomeScreen() {
             onPress={() => {
               setModalVisible(true), setModalType("trash");
             }}
-            title="Other Items"
-            value={data.stats.totalTrashByType.trash + " items"}
+            title="Organique"
+            value={data.stats.totalTrashByType.trash + " éléments"}
             icon={faAppleWhole}
           />
 
           <Text style={styles.SectionTitle}>Status</Text>
           <StatusItem
             icon={faTrashCan}
-            title="Glass Container"
+            title="Bac verre"
             description={[
-              "The bin is 70% full",
+              "La poubelle est à 70% remplie",
               lastGlassItem
-                ? `Last item recolted: ${format(
+                ? `Dernier élément récolté: ${format(
                     lastGlassItem.createdAt,
                     "dd/MM/yyyy"
                   )}`
@@ -252,11 +252,11 @@ export default function HomeScreen() {
 
           <StatusItem
             icon={faTrashCan}
-            title="Recyclable Container"
+            title="Bac recyclable"
             description={[
-              "The bin is 40% full",
+              "La poubelle est à 40% remplie",
               lastRecyclableItem
-                ? `Last item recolted: ${format(
+                ? `Dernier élément récolté: ${format(
                     lastRecyclableItem.createdAt,
                     "dd/MM/yyyy"
                   )}`
@@ -266,11 +266,11 @@ export default function HomeScreen() {
 
           <StatusItem
             icon={faTrashCan}
-            title="Other Items Container"
+            title="Bac organique"
             description={[
-              "The bin is 20% full",
+              "La poubelle est à 20% remplie",
               lastTrashItem
-                ? `Last item recolted: ${format(
+                ? `Dernier élément récolté: ${format(
                     lastTrashItem.createdAt,
                     "dd/MM/yyyy"
                   )}`
