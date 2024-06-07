@@ -4,27 +4,27 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
-}
-
-enum TrashType {
-  recyclable
-  trash
-  glass
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model Trash {
   id        Int       @id @default(autoincrement())
   binId     String    @db.VarChar(255)
-  image     String?
-  trashType TrashType
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  trashType TrashType
+  image     String?
 }
 
 model Admin {
   id       Int    @id @default(autoincrement())
   email    String @unique
   password String
+}
+
+enum TrashType {
+  recyclable
+  trash
+  glass
 }
