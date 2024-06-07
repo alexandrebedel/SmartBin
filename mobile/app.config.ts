@@ -10,7 +10,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         extra: {
           env: "production",
           production: true,
-          apiUrl: undefined,
+          apiUrl: "https://smart-bin-jade.vercel.app/api",
         },
       };
       break;
@@ -21,7 +21,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         extra: {
           env: "development",
           production: false,
-          apiUrl: "http://172.20.10.2:3000/api",
+          apiUrl: "https://smart-bin-jade.vercel.app/api",
         },
       };
       break;

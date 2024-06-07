@@ -9,6 +9,7 @@
 
 bool closeTimeout = false;
 String binId = "";
+String type = "";
 unsigned long lastPictureTime = millis();
 unsigned long currentTime = millis();
 auto expoAddr = [](String binId, IPAddress ip = IPAddress(172, 20, 10, 2)) -> String
@@ -28,11 +29,11 @@ void setup()
   Led::init();
   lastPictureTime = millis();
   xTaskCreatePinnedToCore(ServoMotor::buttonsTask, "buttonsTask", 4096, NULL, 1, NULL, 0);
+  Serial.println("--- Initialization done ---");
 }
 
 void loop()
 {
-  String type = "";
 
   if (binId.isEmpty())
   {
@@ -51,9 +52,10 @@ void loop()
   currentTime = millis();
   if (currentTime - lastPictureTime >= 10 * 1000 && closeTimeout)
   {
-    Serial.println("Closing the servo motor after 10 seconds");
+    Serial.println("Closing the servo motor after 10 seconds with type " + type);
     Led::off();
     ServoMotor::close(SERVO_BOXES[type]);
+    type = "";
     closeTimeout = false;
   }
 }
