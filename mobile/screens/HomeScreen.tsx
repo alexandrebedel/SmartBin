@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,6 +7,7 @@ import {
   Dimensions,
   ActivityIndicator,
 } from "react-native";
+import { format, addDays, startOfWeek } from "date-fns";
 import { StatusBar } from "expo-status-bar";
 import * as Progress from "react-native-progress";
 import {
@@ -22,17 +24,18 @@ import { fetcher } from "../utils";
 import useSWR from "swr";
 import { NoBinId } from "../components/NoBinId";
 import { useAppContext } from "../contexts/AppContext";
+import { ModalItems } from "../components/ModalItems";
 
 const API_URL = Constants.expoConfig?.extra?.apiUrl as string;
 
 export default function HomeScreen() {
   const { binId } = useAppContext();
   const { data, isLoading } = useSWR(
-    binId ? `${API_URL}/trash/${binId}` : null,
+    binId ? `${API_URL}/trash/b65e90fb-9100-46b6-bdc1-14947f3beb9c` : null,
     fetcher
   );
-
-  console.log(JSON.stringify(data, undefined, 2));
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalType, setModalType] = useState("");
 
   if (isLoading) {
     return (
@@ -44,10 +47,90 @@ export default function HomeScreen() {
   if (!binId) {
     return <NoBinId />;
   }
+
+  const getLastRecycledItem = (type: string) => {
+    const filteredItems = data.trashData.filter(
+      (item: { trashType: string }) => item.trashType === type
+    );
+
+    const sortedItems = filteredItems.sort(
+      (
+        a: { createdAt: string | number | Date },
+        b: { createdAt: string | number | Date }
+      ) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+
+    const lastItem = sortedItems.length > 0 ? sortedItems[0] : null;
+
+    return lastItem;
+  };
+
+  const lastGlassItem = getLastRecycledItem("glass");
+  const lastRecyclableItem = getLastRecycledItem("recyclable");
+  const lastTrashItem = getLastRecycledItem("trash");
+
+  const getTrashByType = (data: { trashData: any[] }, type: any) => {
+    // Filtrer les déchets en fonction du type donné
+    const filteredTrash = data.trashData.filter(
+      (item) => item.trashType === type
+    );
+
+    // Retourner les déchets filtrés
+    return filteredTrash;
+  };
+
+  const recyclableTrash = getTrashByType(data, "recyclable");
+  const glassTrash = getTrashByType(data, "glass");
+  const otherTrash = getTrashByType(data, "trash");
+
+  const sortRecycledItemsByDay = () => {
+    const monday = startOfWeek(new Date(), { weekStartsOn: 1 });
+
+    const sortedData: { [key: string]: number } = {};
+
+    for (let i = 0; i < 7; i++) {
+      const currentDate = addDays(monday, i);
+      const formattedDate = format(currentDate, "yyyy-MM-dd");
+      sortedData[formattedDate] = 0;
+    }
+
+    data.trashData.forEach((item: { createdAt: string | number | Date }) => {
+      const date = format(new Date(item.createdAt), "yyyy-MM-dd");
+      if (sortedData[date] !== undefined) {
+        sortedData[date] += 1;
+      }
+    });
+
+    return sortedData;
+  };
+
+  const sortedRecycledItemsByDay = sortRecycledItemsByDay();
+
+  const daysNames = [
+    "Lundi",
+    "Mardi",
+    "Mercredi",
+    "Jeudi",
+    "Vendredi",
+    "Samedi",
+    "Dimanche",
+  ];
+
   return (
     <View style={{ flex: 1, paddingHorizontal: 15, backgroundColor: "white" }}>
       <StatusBar style="auto" />
       <ScrollView showsVerticalScrollIndicator={false}>
+        <ModalItems
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+          trashData={
+            modalType === "recyclable"
+              ? recyclableTrash
+              : modalType === "glass"
+              ? glassTrash
+              : otherTrash
+          }
+        />
         <View style={{ marginTop: 30, marginBottom: 60 }}>
           <View
             style={{
@@ -57,8 +140,8 @@ export default function HomeScreen() {
               marginBottom: 20,
             }}
           >
-            <Text style={styles.SimpleText}>Fill Level</Text>
-            <Text style={styles.SimpleText}>80% full</Text>
+            <Text style={styles.SimpleText}>Niveau de remplissage</Text>
+            <Text style={styles.SimpleText}>80% remplie</Text>
           </View>
           <Progress.Bar
             progress={0.8}
@@ -76,7 +159,7 @@ export default function HomeScreen() {
             }}
           >
             <Text style={styles.SimpleText}>Status</Text>
-            <Text style={styles.SimpleText}>Full</Text>
+            <Text style={styles.SimpleText}>Remplie</Text>
           </View>
           <View
             style={{
@@ -85,32 +168,16 @@ export default function HomeScreen() {
               justifyContent: "space-between",
             }}
           >
-            <Text style={styles.SimpleText}>Products Recycled</Text>
-            <Text style={styles.SimpleText}>20 items</Text>
+            <Text style={styles.SimpleText}>Produits Recyclés</Text>
+            <Text style={styles.SimpleText}>{data.totalTrash} éléments</Text>
           </View>
           <View>
             <LineChart
               data={{
-                labels: [
-                  "Lundi",
-                  "Mardi",
-                  "Mercredi",
-                  "Jeudi",
-                  "Vendredi",
-                  "Samedi",
-                  "Dimanche",
-                ],
+                labels: daysNames, // Utilisation des noms des jours en français comme labels
                 datasets: [
                   {
-                    data: [
-                      Math.random() * 100,
-                      Math.random() * 100,
-                      Math.random() * 100,
-                      Math.random() * 100,
-                      Math.random() * 100,
-                      Math.random() * 100,
-                      Math.random() * 100,
-                    ],
+                    data: Object.values(sortedRecycledItemsByDay), // Nombre de produits recyclés par jour
                   },
                 ],
               }}
@@ -140,38 +207,74 @@ export default function HomeScreen() {
             />
           </View>
 
-          <Text style={styles.SectionTitle}>Recycling Summary</Text>
+          <Text style={styles.SectionTitle}>Sommaire de recyclage</Text>
           <View style={styles.flexBox}>
-            <Card title="Glass Items" value="5 items" icon={faWineBottle} />
-            <Card title="Plastic Items" value="8 items" icon={faBottleWater} />
+            <Card
+              onPress={() => {
+                setModalVisible(true), setModalType("glass");
+              }}
+              title="Verre"
+              value={data.stats.totalTrashByType.glass + " éléments"}
+              icon={faWineBottle}
+            />
+            <Card
+              onPress={() => {
+                setModalVisible(true), setModalType("recyclable");
+              }}
+              title="Recyclable"
+              value={data.stats.totalTrashByType.recyclable + " éléments"}
+              icon={faBottleWater}
+            />
           </View>
-          <Card title="Other Items" value="7 items" icon={faAppleWhole} />
+          <Card
+            onPress={() => {
+              setModalVisible(true), setModalType("trash");
+            }}
+            title="Organique"
+            value={data.stats.totalTrashByType.trash + " éléments"}
+            icon={faAppleWhole}
+          />
 
           <Text style={styles.SectionTitle}>Status</Text>
           <StatusItem
             icon={faTrashCan}
-            title="Glass Container"
+            title="Bac verre"
             description={[
-              "The bin is 70% full",
-              "Last item recolted: 07/03/2024",
+              "La poubelle est à 70% remplie",
+              lastGlassItem
+                ? `Dernier élément récolté: ${format(
+                    lastGlassItem.createdAt,
+                    "dd/MM/yyyy"
+                  )}`
+                : "No item recolted yet",
             ]}
           />
 
           <StatusItem
             icon={faTrashCan}
-            title="Plastic Container"
+            title="Bac recyclable"
             description={[
-              "The bin is 40% full",
-              "Last item recolted: 03/03/2024",
+              "La poubelle est à 40% remplie",
+              lastRecyclableItem
+                ? `Dernier élément récolté: ${format(
+                    lastRecyclableItem.createdAt,
+                    "dd/MM/yyyy"
+                  )}`
+                : "No item recolted yet",
             ]}
           />
 
           <StatusItem
             icon={faTrashCan}
-            title="Other Items Container"
+            title="Bac organique"
             description={[
-              "The bin is 20% full",
-              "Last item recolted: 06/03/2024",
+              "La poubelle est à 20% remplie",
+              lastTrashItem
+                ? `Dernier élément récolté: ${format(
+                    lastTrashItem.createdAt,
+                    "dd/MM/yyyy"
+                  )}`
+                : "No item recolted yet",
             ]}
           />
         </View>

@@ -38,7 +38,7 @@ const Tabs: FC = () => {
       />
       {binId && (
         <Tab.Screen
-          name="Settings"
+          name="Paramètres"
           component={SettingScreen}
           options={{
             tabBarIcon: ({ color, size }) => (
