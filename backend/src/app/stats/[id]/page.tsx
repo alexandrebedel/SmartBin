@@ -70,7 +70,7 @@ export default function StatsDetail({ params }: { params: { id: string } }) {
     // Fetch the stats details from the backend API
     const fetchStatsDetails = async () => {
       try {
-        const response = await fetch(`/api/trash/${params.id}`);
+        const response = await fetch(`https://smart-bin-jade.vercel.app/api/trash/${params.id}`);
         const data = await response.json();
         // const filteredData = data.;
         setStatsDetails(data);

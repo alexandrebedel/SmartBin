@@ -5,7 +5,7 @@ import DashboardTable from "../components/DashboardTable";
 export const revalidate = 0;
 
 async function getTrashStats() {
-  const res = await fetch("http://localhost:3000/api/trash");
+  const res = await fetch("https://smart-bin-jade.vercel.app/api/trash");
   if (!res.ok) throw new Error("Failed to fetch data");
   return res.json();
 }
