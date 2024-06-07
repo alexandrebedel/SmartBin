@@ -48,7 +48,7 @@ String Camera::sendPhoto(JpegFrame_t frame, String binId)
     LCBUrl url;
 
     // Improve this code
-    url.setUrl("http://172.20.10.2:3000/api/check?binId=" + binId);
+    url.setUrl("http://172.20.10.14:3000/api/check?binId=" + binId);
     bool success = CustomHTTP::post(url, frame);
 
     if (!success)
@@ -70,6 +70,5 @@ String Camera::sendPhoto(JpegFrame_t frame, String binId)
     }
     Serial.println("Opening type " + type + " which is the number " + SERVO_BOXES[type]);
     ServoMotor::open(SERVO_BOXES[type]);
-    Serial.println("Fuck me " + type);
     return type;
 }
