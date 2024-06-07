@@ -14,7 +14,7 @@ export default function PieChart({ data }) {
           width: 380,
           type: 'pie',
         },
-        labels: ['recyclabe', 'dechets', 'Verre'],
+        labels: ['recyclabe', 'Organique', 'Verre'],
         responsive: [{
           breakpoint: 480,
           options: {

@@ -46,7 +46,7 @@ const AreaChart = ({data}) => {
           data: data.recyclable
         },
         {
-          name: 'déchets',
+          name: 'Organique',
           data: data.trash
         },
         {
