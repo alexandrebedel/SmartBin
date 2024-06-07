@@ -49,10 +49,11 @@ export async function POST(request: NextRequest) {
     await prisma.trash.create({
       data: {
         binId,
-        trashType: result.trim() as TrashType,
+        trashType: result.trim() === "organic" ? "trash" : result.trim() as TrashType,
         image: base64,
       },
     });
+    console.log(result);
     return Response.json({
       message: "Successfully found the trash type",
       type: result.trim(),

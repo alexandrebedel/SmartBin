@@ -2,11 +2,11 @@
 #include "servo.h"
 
 GoPlus2 goPlus;
-std::map<String, int> SERVO_BOXES = {{"recyclable", SERVO_NUM0}, {"glass", SERVO_NUM1}, {"trash", SERVO_NUM3}};
+std::map<String, int> SERVO_BOXES = {{"glass", SERVO_NUM0}, {"organic", SERVO_NUM1}, {"recyclable", SERVO_NUM3}};
 
-bool isRecycleOpen = false;
 bool isGlassOpen = false;
-bool isTrashOpen = false;
+bool isOrganicOpen = false;
+bool isRecyclableOpen = false;
 
 void ServoMotor::init()
 {
@@ -25,18 +25,18 @@ void ServoMotor::buttonsTask(void *pvParameters)
         M5.update();
         if (M5.BtnA.wasPressed())
         {
-            ServoMotor::run(SERVO_BOXES["recyclable"], isRecycleOpen ? CLOSE_ANGLE : OPEN_ANGLE);
-            isRecycleOpen = !isRecycleOpen;
-        }
-        if (M5.BtnB.wasPressed())
-        {
             ServoMotor::run(SERVO_BOXES["glass"], isGlassOpen ? CLOSE_ANGLE : OPEN_ANGLE);
             isGlassOpen = !isGlassOpen;
         }
+        if (M5.BtnB.wasPressed())
+        {
+            ServoMotor::run(SERVO_BOXES["organic"], isOrganicOpen ? CLOSE_ANGLE : OPEN_ANGLE);
+            isOrganicOpen = !isOrganicOpen;
+        }
         if (M5.BtnC.wasPressed())
         {
-            ServoMotor::run(SERVO_BOXES["trash"], isTrashOpen ? CLOSE_ANGLE : OPEN_ANGLE);
-            isTrashOpen = !isTrashOpen;
+            ServoMotor::run(SERVO_BOXES["recyclable"], isRecyclableOpen ? CLOSE_ANGLE : OPEN_ANGLE);
+            isRecyclableOpen = !isRecyclableOpen;
         }
         vTaskDelay(200);
     }
@@ -48,17 +48,17 @@ void ServoMotor::open(uint8_t servoNum)
     {
     case 0:
     {
-        isRecycleOpen = true;
+        isGlassOpen = true;
         break;
     }
     case 1:
     {
-        isGlassOpen = true;
+        isOrganicOpen = true;
         break;
     }
-    case 2:
+    case 3:
     {
-        isTrashOpen = true;
+        isRecyclableOpen = true;
         break;
     }
     }
@@ -71,19 +71,19 @@ void ServoMotor::close(uint8_t servoNum)
     {
     case 0:
     {
-        isRecycleOpen = false;
+        isGlassOpen = false;
         // ServoMotor::setIsRecycleOpen(false);
         break;
     }
     case 1:
     {
-        isGlassOpen = false;
+        isOrganicOpen = false;
         // ServoMotor::setIsGlassOpen(false);
         break;
     }
-    case 2:
+    case 3:
     {
-        isTrashOpen = false;
+        isRecyclableOpen = false;
         // ServoMotor::setIsTrashOpen(false);
         break;
     }
@@ -96,10 +96,10 @@ bool ServoMotor::isOpen(uint8_t servoNum)
     switch (servoNum)
     {
     case 0:
-        return isRecycleOpen;
+        return isOrganicOpen;
     case 1:
         return isGlassOpen;
-    case 2:
-        return isTrashOpen;
+    case 3:
+        return isRecyclableOpen;
     }
 }
