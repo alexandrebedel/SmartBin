@@ -11,7 +11,7 @@ def scale_down_img(input_path: str, output_path: str, scale_factor: float, quali
     img.save(output_path, quality=quality)
 
 
-def walk_dir_and_resize(directory: str, quality=20, scale=1) -> None:
+def walk_dir_and_resize(directory: str, quality=15, scale: float = 1) -> None:
     outputRoot = None
 
     for root, _, files in os.walk(directory):
@@ -19,7 +19,6 @@ def walk_dir_and_resize(directory: str, quality=20, scale=1) -> None:
             outputRoot = root
 
         for file in files:
-            # Check if the file is an image
             if not file.endswith((".png", ".jpg", ".jpeg")):
                 continue
 
@@ -33,7 +32,6 @@ def walk_dir_and_resize(directory: str, quality=20, scale=1) -> None:
 
 def main() -> int:
     if len(sys.argv) != 2:
-        # print on stderr
         print("Usage: python resize-dataset.py <images_directory>", file=sys.stderr)
         return 1
 

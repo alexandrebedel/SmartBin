@@ -25,7 +25,7 @@ void Camera::frameRecv(int cmd, const uint8_t *buf, int len)
     }
 }
 
-String Camera::detectTrashType()
+String Camera::detectTrashType(String binId)
 {
     String type;
     JpegFrame_t frame;
@@ -35,20 +35,20 @@ String Camera::detectTrashType()
         Serial.println("Failed receiving xQueue");
         return "";
     }
-    type = sendPhoto(frame);
+    type = sendPhoto(frame, binId);
     Serial.println("Detected " + type);
     free(frame.buf);
     return type;
 }
 
-String Camera::sendPhoto(JpegFrame_t frame)
+String Camera::sendPhoto(JpegFrame_t frame, String binId)
 {
     JsonDocument doc;
     String body;
     LCBUrl url;
 
     // Improve this code
-    url.setUrl("http://192.168.43.105:3000/api/check?binId=alex");
+    url.setUrl("http://172.20.10.14:3000/api/check?binId=" + binId);
     bool success = CustomHTTP::post(url, frame);
 
     if (!success)
@@ -70,6 +70,5 @@ String Camera::sendPhoto(JpegFrame_t frame)
     }
     Serial.println("Opening type " + type + " which is the number " + SERVO_BOXES[type]);
     ServoMotor::open(SERVO_BOXES[type]);
-    Serial.println("Fuck me " + type);
     return type;
 }

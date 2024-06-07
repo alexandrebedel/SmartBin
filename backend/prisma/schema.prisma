@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
@@ -12,11 +12,13 @@ enum TrashType {
   recyclable
   trash
   glass
+  organic
 }
 
 model Trash {
   id        Int       @id @default(autoincrement())
   binId     String    @db.VarChar(255)
+  image     String?
   trashType TrashType
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
