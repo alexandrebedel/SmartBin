@@ -1,66 +1,78 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import ReactApexChart from 'react-apexcharts';
+import React, { useState, useEffect, FC } from "react";
+import ReactApexChart from "react-apexcharts";
 
-const AreaChart = ({data}) => {
-
-  const [chartData, setChartData] = useState({
+const AreaChart: FC<{ data: any }> = ({ data }) => {
+  const [chartData, setChartData] = useState<any>({
     series: [],
     options: {
       chart: {
-        type: 'bar',
-        height: 350
+        type: "bar",
+        height: 350,
       },
       plotOptions: {
         bar: {
           horizontal: false,
-          columnWidth: '55%',
-          endingShape: 'rounded'
-        }
+          columnWidth: "55%",
+          endingShape: "rounded",
+        },
       },
       dataLabels: {
-        enabled: false
+        enabled: false,
       },
       stroke: {
         show: true,
         width: 2,
-        colors: ['transparent']
+        colors: ["transparent"],
       },
       xaxis: {
-        categories: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+        categories: [
+          "Lundi",
+          "Mardi",
+          "Mercredi",
+          "Jeudi",
+          "Vendredi",
+          "Samedi",
+          "Dimanche",
+        ],
       },
       yaxis: {},
       fill: {
-        opacity: 1
+        opacity: 1,
       },
-      tooltip: {}
-    }
+      tooltip: {},
+    },
   });
 
   useEffect(() => {
-    setChartData(prevState => ({
+    setChartData((prevState: any) => ({
       ...prevState,
       series: [
         {
-          name: 'recyclabe',
-          data: data.recyclable
+          name: "recyclabe",
+          data: data.recyclable,
         },
         {
-          name: 'Organique',
-          data: data.trash
+          name: "Organique",
+          data: data.trash,
         },
         {
-          name: 'Verre',
-          data: data.glass
-        }
-      ]
+          name: "Verre",
+          data: data.glass,
+        },
+      ],
     }));
   }, [data]);
 
   return (
     <div>
       <div id="chart">
-        <ReactApexChart options={chartData.options} series={chartData.series} type="bar" height={350} />
+        <ReactApexChart
+          options={chartData.options}
+          series={chartData.series}
+          type="bar"
+          height={350}
+        />
       </div>
       <div id="html-dist"></div>
     </div>

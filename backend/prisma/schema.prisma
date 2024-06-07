@@ -12,7 +12,6 @@ enum TrashType {
   recyclable
   trash
   glass
-  organic
 }
 
 model Trash {
